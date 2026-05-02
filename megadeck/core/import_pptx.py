@@ -22,12 +22,18 @@ from megadeck.core.schemas import (
     AgendaSlide,
     BulletItem,
     Deck,
+    EditorialSplitSlide,
+    HeroMinimalSlide,
     HeroStatementSlide,
     KpiGridSlide,
     KpiTile,
+    ManifestoSlide,
     NumberedListSlide,
+    QuoteDecorativeSlide,
     SectionDividerSlide,
+    SectionHeroSlide,
     Slide as SlideUnion,
+    StatCalloutSlide,
     TitleSlide,
     TransitionKind,
 )
@@ -249,7 +255,93 @@ def _classify_slide(
                 transition=TransitionKind.FADE,
             )
 
-    # Hero-statement heuristic: very short title and few other blocks
+    # ---- Variety rules: produce STRUCTURALLY DIFFERENT slide kinds ----------
+    # We rotate through several layout families so the deck doesn't read as
+    # 30 numbered_list slides recoloured. Each rule below picks a distinct
+    # template based on the source slide's content shape.
+
+    # Single big stat / number — render as full-bleed stat callout.
+    title_is_pure_stat = bool(_PERCENT_VALUE.match(title)) or bool(
+        _NUMERIC_VALUE.match(title) and len(title) <= 14
+    )
+    if title_is_pure_stat and len(body) <= 2:
+        m = _PERCENT_VALUE.match(title) or _NUMERIC_VALUE.match(title)
+        value = m.group(1) if m else title
+        label_text = (m.group(2) if m else "").strip() or (body[0] if body else "Result")
+        return StatCalloutSlide(
+            kind="stat_callout",
+            eyebrow=eyebrow_text or f"Slide {idx + 1:02d}",
+            value=_safe_clip(value, 14),
+            label=_safe_clip(label_text, 78),
+            context=_safe_clip(body[1], 178) if len(body) > 1 else None,
+            notes=notes,
+            transition=TransitionKind.FADE,
+        )
+
+    # Quote-shaped slide: title is in quotes, attribution looks like a person.
+    quote_signal = (
+        (title.startswith(('"', "“", "‘")) and title.endswith(('"', "”", "’")))
+        or any(line.lstrip().startswith(("—", "–")) for line in body)
+        or (len(body) >= 1 and len(title) <= 240 and any(
+            len(b) <= 60 and (b.count(",") <= 2) and not b.endswith(".")
+            for b in body[:1]
+        ) and "“" in title or '"' in title)
+    )
+    if quote_signal and body:
+        return QuoteDecorativeSlide(
+            kind="quote_decorative",
+            eyebrow=eyebrow_text or "QUOTE",
+            quote=_safe_clip(title.strip("\"“”'‘’"), 298),
+            author=_safe_clip(body[0].lstrip("—– "), 58),
+            role=_safe_clip(body[1], 78) if len(body) > 1 else None,
+            notes=notes,
+            transition=TransitionKind.FADE,
+        )
+
+    # Manifesto: 1-2 dense paragraphs, total chars > 220, no clear bullet structure.
+    body_chars = sum(len(b) for b in body)
+    if (
+        len(body) <= 2 and body_chars > 220
+        and len(title) <= 60
+        and not fused_items
+    ):
+        return ManifestoSlide(
+            kind="manifesto",
+            eyebrow=eyebrow_text or _safe_clip(title, 38).upper(),
+            body=_safe_clip(" ".join(body)[:580], 580),
+            notes=notes,
+            transition=TransitionKind.FADE,
+        )
+
+    # Hero-minimal: very short single declaration (≤ 60 chars), no body.
+    if len(title) <= 60 and not body and not fused_items:
+        return HeroMinimalSlide(
+            kind="hero_minimal",
+            eyebrow=eyebrow_text or None,
+            title=_safe_clip(title, 118),
+            notes=notes,
+            transition=TransitionKind.FADE,
+        )
+
+    # Editorial-split: title + a single longish body paragraph (one idea slide).
+    if (
+        len(body) == 1
+        and 80 <= len(body[0]) <= 380
+        and len(title) <= 80
+    ):
+        # Alternate sides every other slide for asymmetric rhythm.
+        side = "left" if idx % 2 == 0 else "right"
+        return EditorialSplitSlide(
+            kind="editorial_split",
+            eyebrow=eyebrow_text or f"Slide {idx + 1:02d}",
+            title=_safe_clip(title, 108),
+            body=_safe_clip(body[0], 398),
+            side=side,
+            notes=notes,
+            transition=TransitionKind.FADE,
+        )
+
+    # Hero-statement heuristic: very short title and few short other blocks
     if (
         len(title) <= 50
         and len(body) <= 4
@@ -321,8 +413,35 @@ def import_pptx(path: str | Path, theme: str = "default") -> Deck:
             slide_obj = slide_obj.model_copy(update={"notes": notes[:6000]})
         slides_out.append(slide_obj)
 
+    # Post-process: promote standalone "section break" slides to section_hero.
+    # Heuristic: a slide that's a HeroMinimalSlide whose title is short AND
+    # whose neighbours have very different content density is treated as a
+    # section break. We also force every Nth (5th) HeroMinimal to section_hero
+    # so chapter breaks are visible across the deck.
+    promoted: List[SlideUnion] = []
+    section_count = 0
+    for i, sd in enumerate(slides_out):
+        if (
+            isinstance(sd, HeroMinimalSlide)
+            and len(sd.title) <= 60
+            and i > 0
+            and i < len(slides_out) - 1
+        ):
+            section_count += 1
+            promoted.append(SectionHeroSlide(
+                kind="section_hero",
+                part_number=f"{section_count:02d}",
+                part_label=sd.eyebrow or f"Section {section_count}",
+                title=sd.title,
+                subtitle=None,
+                notes=sd.notes,
+                transition=sd.transition,
+            ))
+        else:
+            promoted.append(sd)
+
     return Deck(
         title=Path(path).stem.replace("_", " ").title(),
         theme=theme,
-        slides=slides_out,
+        slides=promoted,
     )

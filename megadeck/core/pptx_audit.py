@@ -127,10 +127,17 @@ def _estimate_text_height_in(s: ShapeBBox) -> float:
 
     Uses the largest run's pt size and assumes Inter-like 0.50 width factor.
     Treats hard newlines as line breaks; wraps soft text by character density.
+
+    Decorative single-char glyphs (a giant ", "01", "?") are sized
+    intentionally to fit a fixed-size box — we skip the height check on
+    them by detecting `text_len <= 4` AND `pt >= 80` (decorative threshold).
     """
     if not s.has_text or s.text_len == 0:
         return 0.0
     pt = s.largest_font_pt or 12.0
+    # Decorative oversize glyphs — author knows what they're doing.
+    if s.text_len <= 4 and pt >= 80:
+        return 0.0
     chars_per_line = max(8, int(s.width * 72.0 / (pt * 0.50)))
     lines = max(1, s.text_len // chars_per_line + 1)
     line_h = (pt * 1.20) / 72.0

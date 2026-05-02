@@ -390,6 +390,69 @@ class QuestionSlide(_SlideBase):
     contact: Optional[str] = Field(None, max_length=80)
 
 
+class HeroMinimalSlide(_SlideBase):
+    """Apple-keynote-style: one massive line of type, no chrome, full bleed.
+
+    Used for opening statements, single-idea slides, manifesto moments. The
+    content is intentionally sparse — type does the entire job.
+    """
+    kind: Literal["hero_minimal"] = "hero_minimal"
+    title: str = Field(..., max_length=120)
+    eyebrow: Optional[str] = Field(None, max_length=40)
+    footer: Optional[str] = Field(None, max_length=80)
+
+
+class EditorialSplitSlide(_SlideBase):
+    """Magazine-style 50/50 split: title + supporting paragraph on one side,
+    decorative geometry / orb composition on the other. Asymmetric, breathing."""
+    kind: Literal["editorial_split"] = "editorial_split"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    body: str = Field(..., max_length=400, description="The 1-2 paragraph article body.")
+    side: Literal["left", "right"] = Field(
+        "left", description="Which side carries the text (other side = decoration)."
+    )
+    decoration_color: Optional[str] = Field(None, description="Override the accent for the decoration block.")
+
+
+class StatCalloutSlide(_SlideBase):
+    """Full-bleed massive number as the entire focus. Like a Linear marketing
+    statistic page — the number is 60-70% of the slide height."""
+    kind: Literal["stat_callout"] = "stat_callout"
+    eyebrow: str = Field(..., max_length=40)
+    value: str = Field(..., max_length=14, description="The big number, e.g. '95%' / '$24M' / '20×'.")
+    label: str = Field(..., max_length=80)
+    context: Optional[str] = Field(None, max_length=180)
+
+
+class ManifestoSlide(_SlideBase):
+    """Dense paragraph treated as the entire slide artwork. One thought, no
+    chrome, oversize body type, asymmetric leading. Used for principle slides."""
+    kind: Literal["manifesto"] = "manifesto"
+    eyebrow: Optional[str] = Field(None, max_length=40)
+    body: str = Field(..., max_length=600)
+
+
+class QuoteDecorativeSlide(_SlideBase):
+    """Editorial pull-quote with a giant decorative open-quote glyph and a
+    serif-styled quote. Used when the content is itself a quote."""
+    kind: Literal["quote_decorative"] = "quote_decorative"
+    eyebrow: Optional[str] = Field(None, max_length=40)
+    quote: str = Field(..., max_length=300)
+    author: str = Field(..., max_length=60)
+    role: Optional[str] = Field(None, max_length=80)
+
+
+class SectionHeroSlide(_SlideBase):
+    """Full-bleed gradient section divider with a giant part number + title.
+    Cinematic chapter break — much louder than the existing section_divider."""
+    kind: Literal["section_hero"] = "section_hero"
+    part_number: str = Field(..., max_length=8, description="e.g. '01', '02', 'PART 03'.")
+    part_label: str = Field(..., max_length=30)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=160)
+
+
 # Discriminated union — the renderer dispatches on `kind`.
 Slide = Annotated[
     Union[
@@ -419,6 +482,12 @@ Slide = Annotated[
         StatHeroSlide,
         LogoGridSlide,
         QuestionSlide,
+        HeroMinimalSlide,
+        EditorialSplitSlide,
+        StatCalloutSlide,
+        ManifestoSlide,
+        QuoteDecorativeSlide,
+        SectionHeroSlide,
     ],
     Field(discriminator="kind"),
 ]

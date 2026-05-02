@@ -464,9 +464,19 @@ def add_eyebrow(
     theme: Theme,
     left: Optional[float] = None,
     top: float = 0.85,
+    width: Optional[float] = None,
 ):
-    """Standard eyebrow row: thin vertical accent + small uppercase label."""
+    """Standard eyebrow row: thin vertical accent + small uppercase label.
+
+    `width` controls how wide the label box is. By default it spans the
+    *remaining* canvas width from `left`, with the right margin reserved.
+    Passing an explicit `width` is required when the eyebrow lives in a
+    half-width column (editorial_split, two_column, etc.) so the box
+    doesn't run off-canvas.
+    """
     x = theme.left_margin_in if left is None else left
+    if width is None:
+        width = theme.slide_width_in - theme.right_margin_in - x
     add_v_line(
         slide,
         left=x - 0.10, top=top,
@@ -475,7 +485,7 @@ def add_eyebrow(
     )
     add_text(
         slide,
-        left=x, top=top, width=11.0, height=0.30,
+        left=x, top=top, width=width, height=0.30,
         text=text,
         font=theme.font_body,
         size_pt=theme.type_scale.eyebrow,
