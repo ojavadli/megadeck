@@ -11,6 +11,7 @@ from megadeck.design_system.primitives import (
     add_rect,
     add_round_rect,
     add_text,
+    add_themed_card,
     set_slide_bg,
 )
 from megadeck.design_system.tokens import Theme
@@ -54,17 +55,9 @@ def render_bento_grid(
         row = i // 2
         x = LEFT + col * (col_w + col_gap)
         y = grid_top + row * (row_h + row_gap)
-        # Drop-shadow ghost
-        add_round_rect(
-            slide,
-            left=x + 0.04, top=y + 0.04, width=col_w, height=row_h,
-            fill=theme.overlay, adjust=0.04,
-        )
-        # Card body
-        add_round_rect(
-            slide,
+        add_themed_card(
+            slide, theme,
             left=x, top=y, width=col_w, height=row_h,
-            fill=theme.surface, line=theme.hairline, line_w=0.5,
             adjust=0.04,
         )
         # Top accent

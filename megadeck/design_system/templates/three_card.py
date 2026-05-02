@@ -60,24 +60,56 @@ def render_three_card(
 
     for i, card in enumerate(data.items):
         x = LEFT + i * (col_w + col_gap)
-        # Drop-shadow rectangle slightly behind
-        add_round_rect(
-            slide,
-            left=x + 0.04, top=card_top + 0.05,
-            width=col_w, height=card_h,
-            fill=theme.overlay,
-            adjust=0.04,
-        )
-        # Main card
-        add_round_rect(
-            slide,
-            left=x, top=card_top,
-            width=col_w, height=card_h,
-            fill=theme.bg,
-            line=theme.hairline,
-            line_w=0.5,
-            adjust=0.04,
-        )
+        # Main card — themed (real drop shadow on shadow/glass themes,
+        # painted-shadow rectangle behind on flat themes).
+        if theme.card_style == "flat":
+            add_round_rect(
+                slide,
+                left=x + 0.04, top=card_top + 0.05,
+                width=col_w, height=card_h,
+                fill=theme.overlay,
+                adjust=0.04,
+            )
+            card_shape = add_round_rect(
+                slide,
+                left=x, top=card_top,
+                width=col_w, height=card_h,
+                fill=theme.bg,
+                line=theme.hairline,
+                line_w=0.5,
+                adjust=0.04,
+            )
+        elif theme.card_style == "glass":
+            card_shape = add_round_rect(
+                slide,
+                left=x, top=card_top,
+                width=col_w, height=card_h,
+                fill=None, line=None,
+                adjust=0.04,
+            )
+            try:
+                from megadeck.design_system.effects import glass_card
+                glass_card(card_shape, tint=theme.title, border=theme.title, fill_alpha=14)
+            except Exception:
+                pass
+        else:  # shadow
+            card_shape = add_round_rect(
+                slide,
+                left=x, top=card_top,
+                width=col_w, height=card_h,
+                fill=theme.surface,
+                line=theme.hairline,
+                line_w=0.5,
+                adjust=0.04,
+            )
+            try:
+                from megadeck.design_system.effects import apply_drop_shadow
+                apply_drop_shadow(
+                    card_shape, color="000000", alpha_pct=35,
+                    blur_pt=24, distance_pt=4,
+                )
+            except Exception:
+                pass
         # Top accent strip — two-tone for gradient feel
         add_rect(
             slide,

@@ -12,6 +12,7 @@ from megadeck.design_system.primitives import (
     add_rect,
     add_round_rect,
     add_text,
+    add_themed_card,
     set_slide_bg,
 )
 from megadeck.design_system.tokens import Theme
@@ -70,11 +71,9 @@ def render_kpi_grid(
 
     for i, tile in enumerate(data.tiles):
         x = LEFT + i * (tile_w + gap)
-        # Card
-        add_round_rect(
-            slide,
+        add_themed_card(
+            slide, theme,
             left=x, top=grid_top, width=tile_w, height=grid_h,
-            fill=theme.surface, line=theme.hairline, line_w=0.5,
             adjust=0.06,
         )
         # Top accent

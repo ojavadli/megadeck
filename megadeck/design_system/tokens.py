@@ -91,9 +91,28 @@ class Theme:
     top_margin_in: float = 0.85
     bottom_margin_in: float = 0.70
 
+    # Optional polish — opt-in for "megaslick" themes (motion / aurora / vercel)
+    bg_style: str = "solid"           # "solid" | "aurora" | "vercel-glow" | "linear-mesh"
+    bg_aurora_a: RGBColor | None = None  # top-left stop for aurora bg
+    bg_aurora_b: RGBColor | None = None  # mid stop
+    bg_aurora_c: RGBColor | None = None  # bottom-right stop
+    card_style: str = "flat"          # "flat" | "shadow" | "glass"
+    accent_glow: bool = False         # add outer glow to numerals + accents
+    accent_glow_radius_pt: float = 22.0
+    accent_glow_alpha_pct: int = 60
+
     @property
     def content_width_in(self) -> float:
         return self.slide_width_in - self.left_margin_in - self.right_margin_in
+
+    @property
+    def is_dark(self) -> bool:
+        """Quick heuristic — dark themes have low-luminance backgrounds."""
+        try:
+            r, g, b = (int(str(self.bg)[i:i+2], 16) for i in (0, 2, 4))
+            return (0.299 * r + 0.587 * g + 0.114 * b) < 128
+        except Exception:
+            return False
 
 
 # ----- Built-in themes ---------------------------------------------------------
@@ -386,6 +405,152 @@ GLASS_THEME = Theme(
 )
 
 
+MOTION_THEME = Theme(
+    name="motion",
+    description="Motion.dev energy — indigo→cobalt→cyan aurora, mint accent, glowing numerals.",
+    bg=_rgb("0B0B14"),
+    surface=_rgb("13131F"),
+    overlay=_rgb("1B1B2A"),
+    title=_rgb("FFFFFF"),
+    body=_rgb("CBD5E1"),
+    muted=_rgb("9CA3B8"),
+    light=_rgb("64748B"),
+    inverse=_rgb("0B0B14"),
+    accent=_rgb("00E5A0"),
+    accent_dk=_rgb("00B57F"),
+    accent_lt=_rgb("4FFFC9"),
+    accent_bg=_rgb("12251F"),
+    success=_rgb("22D3EE"),
+    warning=_rgb("FBBF24"),
+    danger=_rgb("F87171"),
+    hairline=_rgb("262638"),
+    bg_style="aurora",
+    bg_aurora_a=_rgb("0E0E20"),    # very dark indigo (top-left)
+    bg_aurora_b=_rgb("1F2D7A"),    # cobalt (mid)
+    bg_aurora_c=_rgb("083344"),    # cyan-950 (bottom-right)
+    card_style="glass",
+    accent_glow=True,
+    accent_glow_radius_pt=20.0,
+    accent_glow_alpha_pct=60,
+)
+
+
+AURORA_THEME = Theme(
+    name="aurora",
+    description="Sweeping violet→fuchsia→teal aurora gradient. White type. Cinematic.",
+    bg=_rgb("0E1023"),
+    surface=_rgb("1B1F3A"),
+    overlay=_rgb("2A2F55"),
+    title=_rgb("FFFFFF"),
+    body=_rgb("E2E8F0"),
+    muted=_rgb("CBD5E1"),
+    light=_rgb("94A3B8"),
+    inverse=_rgb("0E1023"),
+    accent=_rgb("F0ABFC"),
+    accent_dk=_rgb("D946EF"),
+    accent_lt=_rgb("F5D0FE"),
+    accent_bg=_rgb("3B0764"),
+    success=_rgb("4ADE80"),
+    warning=_rgb("FACC15"),
+    danger=_rgb("FB7185"),
+    hairline=_rgb("3B3F66"),
+    bg_style="aurora",
+    bg_aurora_a=_rgb("3B0764"),    # violet-950 (deep)
+    bg_aurora_b=_rgb("BE185D"),    # pink-700 (lit-up middle)
+    bg_aurora_c=_rgb("0E7490"),    # cyan-700 (cool teal)
+    card_style="glass",
+    accent_glow=True,
+    accent_glow_radius_pt=22.0,
+    accent_glow_alpha_pct=70,
+)
+
+
+VERCEL_THEME = Theme(
+    name="vercel",
+    description="Pure black, white type, electric blue glow. Vercel/v0 marketing aesthetic.",
+    bg=_rgb("000000"),
+    surface=_rgb("0A0A0A"),
+    overlay=_rgb("171717"),
+    title=_rgb("FFFFFF"),
+    body=_rgb("A1A1AA"),           # zinc-400
+    muted=_rgb("71717A"),           # zinc-500
+    light=_rgb("3F3F46"),           # zinc-700
+    inverse=_rgb("000000"),
+    accent=_rgb("3B82F6"),          # blue-500
+    accent_dk=_rgb("2563EB"),
+    accent_lt=_rgb("60A5FA"),
+    accent_bg=_rgb("0F1729"),
+    success=_rgb("22C55E"),
+    warning=_rgb("EAB308"),
+    danger=_rgb("EF4444"),
+    hairline=_rgb("262626"),
+    bg_style="vercel-glow",
+    bg_aurora_a=_rgb("000000"),
+    bg_aurora_b=_rgb("0B1733"),
+    bg_aurora_c=_rgb("000000"),
+    card_style="shadow",
+    accent_glow=True,
+    accent_glow_radius_pt=24.0,
+    accent_glow_alpha_pct=50,
+    font_mono="JetBrains Mono",
+)
+
+
+FRAMER_THEME = Theme(
+    name="framer",
+    description="Layered glass on warm gradient — Framer landing-page energy.",
+    bg=_rgb("F4ECFF"),
+    surface=_rgb("FFFFFF"),
+    overlay=_rgb("EDE3FF"),
+    title=_rgb("0E0B1F"),
+    body=_rgb("3F3754"),
+    muted=_rgb("706892"),
+    light=_rgb("ADA4C9"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("6E29FF"),
+    accent_dk=_rgb("5118D1"),
+    accent_lt=_rgb("B795FF"),
+    accent_bg=_rgb("EFE3FF"),
+    success=_rgb("16A34A"),
+    warning=_rgb("F97316"),
+    danger=_rgb("E11D48"),
+    hairline=_rgb("E0D6F4"),
+    bg_style="aurora",
+    bg_aurora_a=_rgb("F4ECFF"),
+    bg_aurora_b=_rgb("FFE9F4"),
+    bg_aurora_c=_rgb("E5F2FF"),
+    card_style="glass",
+    accent_glow=False,
+)
+
+
+LINEAR_PRO_THEME = Theme(
+    name="linear-pro",
+    description="Linear app exact: graphite background, lavender accent, exquisite hairlines.",
+    bg=_rgb("0F1014"),
+    surface=_rgb("1A1B22"),
+    overlay=_rgb("23242C"),
+    title=_rgb("F4F4F5"),
+    body=_rgb("D4D4D8"),
+    muted=_rgb("A1A1AA"),
+    light=_rgb("52525B"),
+    inverse=_rgb("0F1014"),
+    accent=_rgb("8B5CF6"),
+    accent_dk=_rgb("7C3AED"),
+    accent_lt=_rgb("C4B5FD"),
+    accent_bg=_rgb("231A45"),
+    success=_rgb("4ADE80"),
+    warning=_rgb("FBBF24"),
+    danger=_rgb("F87171"),
+    hairline=_rgb("2B2C36"),
+    bg_style="solid",
+    card_style="shadow",
+    accent_glow=True,
+    accent_glow_radius_pt=18.0,
+    accent_glow_alpha_pct=45,
+)
+
+
 _THEMES: Dict[str, Theme] = {
     "default": DEFAULT_THEME,
     "dark": DARK_THEME,
@@ -400,6 +565,11 @@ _THEMES: Dict[str, Theme] = {
     "swiss": SWISS_THEME,
     "japandi": JAPANDI_THEME,
     "glass": GLASS_THEME,
+    "motion": MOTION_THEME,
+    "aurora": AURORA_THEME,
+    "vercel": VERCEL_THEME,
+    "framer": FRAMER_THEME,
+    "linear-pro": LINEAR_PRO_THEME,
 }
 
 

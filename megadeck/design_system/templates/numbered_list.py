@@ -28,7 +28,7 @@ def render_numbered_list(
     page_total: int,
     section_label: str | None = None,
 ) -> None:
-    set_slide_bg(slide, color=theme.bg)
+    set_slide_bg(slide, color=theme.bg, theme=theme)
     add_corner_dotgrid(slide, theme)
     add_eyebrow(slide, text=data.eyebrow.upper(), theme=theme)
 
@@ -83,20 +83,32 @@ def render_numbered_list(
 
     for i, item in enumerate(data.items):
         y = body_top + i * (item_h + gap)
-        # Big outlined number
-        add_text(
+        # Big outlined number — themes that opt-in get an outer glow.
+        num_color = theme.accent_lt if not theme.is_dark else theme.accent
+        num_tb = add_text(
             slide,
             left=LEFT, top=y - 0.05,
             width=NUM_COL_W, height=item_h + 0.10,
             text=f"{i+1:02d}",
             font=theme.font_display,
             size_pt=num_pt,
-            color=theme.accent_lt,
+            color=num_color,
             bold=True,
             align=PP_ALIGN.LEFT,
             anchor=MSO_ANCHOR.MIDDLE,
             line_spacing=0.95,
         )
+        if theme.accent_glow and num_tb is not None:
+            try:
+                from megadeck.design_system.effects import apply_glow
+                apply_glow(
+                    num_tb,
+                    color=theme.accent,
+                    radius_pt=theme.accent_glow_radius_pt,
+                    alpha_pct=theme.accent_glow_alpha_pct,
+                )
+            except Exception:
+                pass
         # Vertical accent
         bar_pad = 0.06
         add_v_line(

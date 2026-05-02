@@ -50,10 +50,52 @@ def measure_title_height(text: str, *, size_pt: int, width_in: float, line_spaci
 
 # ----- Background --------------------------------------------------------------
 
-def set_slide_bg(slide: Slide, color: RGBColor) -> None:
+def set_slide_bg(slide: Slide, color: RGBColor, theme: Theme | None = None) -> None:
+    """Set the slide background.
+
+    For "solid" themes (default) we use the slide's `background` element so
+    no extra shape clutters the slide. For gradient themes we add a full-bleed
+    rectangle behind everything else and apply a real DrawingML gradient fill.
+    The slide's own background stays solid as a fallback for renderers that
+    don't support gradients in shape fills (rare).
+    """
     bg = slide.background
     bg.fill.solid()
     bg.fill.fore_color.rgb = color
+    if theme is None or theme.bg_style == "solid":
+        return
+    # Gradient backgrounds — full-bleed rectangle as the *first* shape.
+    from pptx.enum.shapes import MSO_SHAPE
+    from pptx.util import Emu
+    from megadeck.design_system.effects import (
+        aurora_background, apply_linear_gradient, apply_radial_gradient,
+    )
+    rect = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE,
+        0, 0,
+        Emu(int(theme.slide_width_in * 914400)),
+        Emu(int(theme.slide_height_in * 914400)),
+    )
+    rect.line.fill.background()
+    a = theme.bg_aurora_a or theme.bg
+    b = theme.bg_aurora_b or theme.bg
+    c = theme.bg_aurora_c or theme.bg
+    if theme.bg_style == "aurora":
+        aurora_background(rect, a=a, b=b, c=c)
+    elif theme.bg_style == "vercel-glow":
+        # Subtle radial glow centered top — Vercel marketing pages signature.
+        apply_radial_gradient(
+            rect,
+            inner_color=b, outer_color=a,
+            inner_alpha=80, outer_alpha=100,
+            focus_x=50, focus_y=15,
+        )
+    elif theme.bg_style == "linear-mesh":
+        apply_linear_gradient(
+            rect,
+            stops=[(0, a, 100), (60, b, 100), (100, c, 100)],
+            angle_deg=160.0,
+        )
 
 
 # ----- Text --------------------------------------------------------------------
@@ -229,6 +271,74 @@ def add_round_rect(
         rect.line.color.rgb = line
         if line_w is not None:
             rect.line.width = Pt(line_w)
+    return rect
+
+
+def add_themed_card(
+    slide: Slide,
+    theme: Theme,
+    *,
+    left: float,
+    top: float,
+    width: float,
+    height: float,
+    accent_border: bool = False,
+    adjust: float = 0.05,
+):
+    """Add a card whose look respects `theme.card_style`.
+
+    flat       → solid surface with hairline + painted-shadow rect behind
+    shadow     → solid surface + real DrawingML drop shadow
+    glass      → translucent tinted fill + drop shadow (good on aurora bg)
+    """
+    style = theme.card_style or "flat"
+    if style == "flat":
+        # Painted shadow underlay
+        add_round_rect(
+            slide,
+            left=left + 0.04, top=top + 0.05,
+            width=width, height=height,
+            fill=theme.overlay,
+            adjust=adjust,
+        )
+        return add_round_rect(
+            slide,
+            left=left, top=top, width=width, height=height,
+            fill=theme.surface,
+            line=theme.accent if accent_border else theme.hairline,
+            line_w=1.5 if accent_border else 0.5,
+            adjust=adjust,
+        )
+    if style == "glass":
+        rect = add_round_rect(
+            slide,
+            left=left, top=top, width=width, height=height,
+            fill=None, line=None,
+            adjust=adjust,
+        )
+        try:
+            from megadeck.design_system.effects import glass_card
+            border = theme.accent if accent_border else theme.title
+            glass_card(rect, tint=theme.title, border=border, fill_alpha=14)
+        except Exception:
+            pass
+        return rect
+    # shadow
+    rect = add_round_rect(
+        slide,
+        left=left, top=top, width=width, height=height,
+        fill=theme.surface,
+        line=theme.accent if accent_border else theme.hairline,
+        line_w=1.5 if accent_border else 0.5,
+        adjust=adjust,
+    )
+    try:
+        from megadeck.design_system.effects import apply_drop_shadow
+        apply_drop_shadow(
+            rect, color="000000", alpha_pct=35, blur_pt=22, distance_pt=4,
+        )
+    except Exception:
+        pass
     return rect
 
 

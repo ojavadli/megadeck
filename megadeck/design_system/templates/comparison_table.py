@@ -26,7 +26,7 @@ def render_comparison_table(
     page_total: int,
     section_label: str | None = None,
 ) -> None:
-    set_slide_bg(slide, color=theme.bg)
+    set_slide_bg(slide, color=theme.bg, theme=theme)
     add_corner_dotgrid(slide, theme)
     add_eyebrow(slide, text=data.eyebrow.upper(), theme=theme)
 
