@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.cursor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated artefacts
+*.pptx
+!examples/sample.pptx
+*.pdf
+*.png
+!docs/**/*.png
+!megadeck/assets/**/*.png
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Local agent transcripts
+agent-transcripts/
