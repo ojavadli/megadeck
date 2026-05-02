@@ -1,0 +1,14 @@
+{
+  "name": "seed-pull-quote",
+  "source": "hand-authored",
+  "kind_hint": "manifesto",
+  "slide_w_in": 13.333,
+  "slide_h_in": 7.5,
+  "description": "Pull quote: oversized italic centered, attribution below, accent rule.",
+  "palette": [],
+  "shapes": [
+    {"role": "title", "left_in": 1.50, "top_in": 2.20, "width_in": 10.30, "height_in": 3.0, "font_size_pt": 60, "font_bold": false, "font_italic": true, "font_name": "Playfair Display", "alignment": "center", "z": 0},
+    {"role": "decoration", "left_in": 6.00, "top_in": 5.40, "width_in": 1.30, "height_in": 0.040, "z": 1},
+    {"role": "subtitle", "left_in": 1.50, "top_in": 5.65, "width_in": 10.30, "height_in": 0.50, "font_size_pt": 13, "alignment": "center", "z": 2}
+  ]
+}

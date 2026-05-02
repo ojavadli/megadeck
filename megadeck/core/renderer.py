@@ -235,6 +235,47 @@ def render_deck(deck: Deck, output_path: str | Path) -> Path:
                 apply_transition(slide.element, sdata.transition)
                 continue
 
+        # Stamp per-slide composition (if any) onto the slide so set_slide_bg()
+        # in primitives.py can render the right ambient design layer.
+        slide_composition = getattr(sdata, "composition", None)
+        if slide_composition:
+            try:
+                slide._megadeck_composition = slide_composition  # noqa: SLF001
+            except Exception:
+                pass
+
+        # Per-slide font swap based on composition's typography pairing.
+        # editorial → serif, blueprint → mono, brutalist → display weight.
+        slide_theme = theme
+        if slide_composition:
+            from dataclasses import replace as _dc_replace
+            from megadeck.design_system.type_pairs import fonts_for_composition
+            disp, body = fonts_for_composition(slide_composition, theme)
+            if disp != theme.font_display or body != theme.font_body:
+                try:
+                    slide_theme = _dc_replace(theme, font_display=disp, font_body=body)
+                except Exception:
+                    slide_theme = theme
+
+        # Layout dispatch — when slide.layout is set, fill the named ingested
+        # layout's geometry with this slide's content; bypass the kind/variant
+        # template entirely.
+        layout_name = getattr(sdata, "layout", None)
+        if layout_name:
+            from megadeck.design_system.layouts.fill import apply_layout
+            from megadeck.design_system.primitives import add_page_chrome
+            ok = apply_layout(slide, layout_name, sdata, slide_theme)
+            if ok:
+                add_page_chrome(
+                    slide, theme=slide_theme,
+                    page_n=page_n, page_total=total,
+                    section_label=section_label,
+                )
+                if sdata.notes:
+                    _set_speaker_notes(slide, sdata.notes)
+                apply_transition(slide.element, sdata.transition)
+                continue
+
         renderer_fn = _RENDERERS.get(type(sdata))
         if renderer_fn is None:
             raise NotImplementedError(f"Unknown slide kind: {type(sdata).__name__}")
@@ -245,11 +286,11 @@ def render_deck(deck: Deck, output_path: str | Path) -> Path:
         renderer_fn = get_variant_renderer(
             kind=getattr(sdata, "kind", ""),
             variant=getattr(sdata, "variant", None),
-            theme=theme,
+            theme=slide_theme,
             default=renderer_fn,
         )
         renderer_fn(
-            slide, sdata, theme,
+            slide, sdata, slide_theme,
             page_n=page_n, page_total=total,
             section_label=section_label,
         )

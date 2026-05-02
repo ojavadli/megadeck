@@ -1,0 +1,16 @@
+{
+  "name": "seed-editorial-hero",
+  "source": "hand-authored",
+  "kind_hint": "hero_statement",
+  "slide_w_in": 13.333,
+  "slide_h_in": 7.5,
+  "description": "Editorial hero: huge serif headline in left 7 columns, vertical rule, folio mark right.",
+  "palette": [],
+  "shapes": [
+    {"role": "eyebrow", "left_in": 0.6, "top_in": 0.55, "width_in": 4.0, "height_in": 0.30, "font_size_pt": 11, "font_bold": false, "alignment": "left", "z": 0},
+    {"role": "title", "left_in": 0.6, "top_in": 1.20, "width_in": 7.50, "height_in": 4.50, "font_size_pt": 88, "font_bold": true, "font_name": "Playfair Display", "alignment": "left", "z": 1},
+    {"role": "body", "left_in": 0.6, "top_in": 6.00, "width_in": 7.50, "height_in": 0.90, "font_size_pt": 14, "font_bold": false, "alignment": "left", "z": 2},
+    {"role": "decoration", "left_in": 8.30, "top_in": 1.20, "width_in": 0.020, "height_in": 4.50, "z": 3},
+    {"role": "subtitle", "left_in": 8.50, "top_in": 1.30, "width_in": 4.30, "height_in": 0.50, "font_size_pt": 12, "font_italic": true, "alignment": "left", "z": 4}
+  ]
+}

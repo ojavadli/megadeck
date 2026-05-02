@@ -1,28 +1,25 @@
-"""Slide-rhythm orchestrator.
+"""Slide-rhythm orchestrator (variants AND compositions).
 
-A deck reads as composed (not random) when the template selection follows
-a *rhythm* — section breaks every N slides, hero moments at predictable
-beats, dense lists balanced by manifestos and quotes. This module post-
-processes a `Deck` to enforce that rhythm.
+A deck reads as composed (not random) when slide selection follows a
+*rhythm* — section breaks every N slides, hero moments at predictable
+beats, dense lists balanced by manifestos. This module post-processes a
+`Deck` to enforce that rhythm.
 
-Rules
------
+Three rhythms are layered
+-------------------------
 
-* Every Nth slide (configurable, default 6) gets variant rotation: a
-  numbered_list at position 0 mod 6 stays default; at 1 mod 6 it becomes
-  `cards`; at 2 mod 6 it becomes `timeline`; at 3 mod 6 it becomes `split`.
-* The deck never has 4+ identical-kind slides in a row (we promote one to
-  hero_minimal or section_hero to break the monotony).
-* If a deck has a section_divider every K slides, those become section_hero
-  (the bigger cinematic version) automatically.
+1. **Variant rhythm** — each numbered_list slide cycles through the four
+   registered variants (default → cards → timeline → split → repeat).
+2. **Composition rhythm** — each slide gets a different composition from
+   a 10-element rotation. Adjacent slides never share visual language.
+3. **Section-divider promotion** — source-side dividers become the
+   cinematic `section_hero` kind.
 
-The rhythm is non-destructive — content is never altered, only the
-*variant* and occasionally the *kind* are mutated to maximise visual
-variety.
+Content is never altered.
 """
 from __future__ import annotations
 
-from typing import Dict, List, Optional  # noqa: F401
+from typing import List, Optional
 
 from megadeck.core.schemas import (
     Deck,
@@ -43,29 +40,45 @@ _NUMBERED_LIST_VARIANT_CYCLE: List[Optional[str]] = [
 ]
 
 
-def apply_rhythm(deck: Deck, *, period: int = 6) -> Deck:
-    """Return a copy of `deck` with variants assigned to maximise visual
-    rhythm. Content is never altered.
+_THREE_CARD_VARIANT_CYCLE: List[Optional[str]] = [
+    None,           # default flat 3 cards
+    "staggered",    # vertical-stagger asymmetric
+    "asymmetric",   # one big card + two small
+]
 
-    `period` controls how many slides between cycle resets.
+
+# 10 distinct visual languages, ordered so adjacent slides differ.
+_COMPOSITION_ROTATION: List[str] = [
+    "typographic", "swiss", "editorial", "blueprint",
+    "grid", "brutalist", "photographic", "mono-grid",
+    "bauhaus", "risograph",
+]
+
+
+def apply_rhythm(deck: Deck, *, period: int = 6) -> Deck:
+    """Return a copy of `deck` with variants AND compositions assigned to
+    maximise visual rhythm across the deck.
+
+    `period` is reserved for future use (cycles auto-wrap).
     """
     new_slides: List[SlideUnion] = []
-    numbered_streak = 0
-    nl_index = 0  # which variant next time we see a numbered_list
+    nl_index = 0
+    tc_index = 0
+    comp_index = 0
+    last_comp: Optional[str] = None
 
     for i, sd in enumerate(deck.slides):
         replacement: SlideUnion = sd
 
         if isinstance(sd, NumberedListSlide):
-            # Rotate variants every numbered_list we encounter.
-            variant = _NUMBERED_LIST_VARIANT_CYCLE[nl_index % len(_NUMBERED_LIST_VARIANT_CYCLE)]
+            v = _NUMBERED_LIST_VARIANT_CYCLE[nl_index % len(_NUMBERED_LIST_VARIANT_CYCLE)]
             nl_index += 1
-            replacement = sd.model_copy(update={"variant": variant})
-            numbered_streak += 1
-        else:
-            numbered_streak = 0
+            replacement = sd.model_copy(update={"variant": v})
+        elif isinstance(sd, ThreeCardSlide):
+            v = _THREE_CARD_VARIANT_CYCLE[tc_index % len(_THREE_CARD_VARIANT_CYCLE)]
+            tc_index += 1
+            replacement = sd.model_copy(update={"variant": v})
 
-        # Promote source-side section dividers to the cinematic section_hero.
         if isinstance(sd, SectionDividerSlide):
             replacement = SectionHeroSlide(
                 kind="section_hero",
@@ -76,6 +89,21 @@ def apply_rhythm(deck: Deck, *, period: int = 6) -> Deck:
                 notes=sd.notes,
                 transition=sd.transition,
             )
+
+        # Composition rhythm — pick the next, skip if it equals previous.
+        if getattr(replacement, "composition", None) is None:
+            comp = _COMPOSITION_ROTATION[comp_index % len(_COMPOSITION_ROTATION)]
+            comp_index += 1
+            if comp == last_comp:
+                comp = _COMPOSITION_ROTATION[comp_index % len(_COMPOSITION_ROTATION)]
+                comp_index += 1
+            try:
+                replacement = replacement.model_copy(update={"composition": comp})
+            except Exception:
+                pass
+            last_comp = comp
+        else:
+            last_comp = getattr(replacement, "composition", None)
 
         new_slides.append(replacement)
 

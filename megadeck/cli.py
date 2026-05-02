@@ -274,82 +274,93 @@ def pptx_audit_command(
     console.print(table)
 
 
-pool_app = typer.Typer(help="Manage the design pool — pluggable theme JSON files.")
-app.add_typer(pool_app, name="pool")
-
-
-# ---------------------------------------------------------------------------
-# layouts subcommand — manage ingested human-designed layouts
-# ---------------------------------------------------------------------------
-
-layouts_app = typer.Typer(
-    help="Ingest, list, and apply real human-designed slide layouts harvested from .pptx files."
-)
-app.add_typer(layouts_app, name="layouts")
-
-
-@layouts_app.command("ingest")
-def layouts_ingest_command(
-    source: str = typer.Argument(
-        ...,
-        help="Path to a .pptx file or a folder containing .pptx files to harvest.",
-    ),
-    name_prefix: Optional[str] = typer.Option(
-        None, "--prefix", "-p",
-        help="Optional name prefix for ingested layouts.",
+@app.command("showcase")
+def showcase_command(
+    theme: str = typer.Option("default", "--theme", "-t"),
+    output: Path = typer.Option(
+        Path.cwd() / "megadeck-showcase.pptx", "--output", "-o",
     ),
 ) -> None:
-    """Ingest .pptx file(s) into the layout library.
+    """Render a sample deck demonstrating every composition + variant.
 
-    Each slide becomes one Layout JSON with role-classified shape geometry,
-    saved under `megadeck/design_system/layouts/lib/`. Use `slide.layout=<name>`
-    in the DSL or pass `--layout <name>` to render with that layout.
+    Useful for previewing how Megadeck interprets a theme. The deck has
+    one slide per composition (typographic / swiss / brutalist / blueprint
+    / editorial / photographic / grid / mono-grid / bauhaus / risograph),
+    plus one slide per major variant.
     """
-    from megadeck.design_system.layouts.ingest import ingest_folder, ingest_pptx
-    from megadeck.design_system.layouts.registry import default_layout_lib_dir
+    from megadeck.core.renderer import render_deck
+    from megadeck.core.schemas import (
+        BulletItem, CardItem, Deck, HeroStatementSlide,
+        NumberedListSlide, ThreeCardSlide, TitleSlide,
+    )
+    from megadeck.design_system.compositions import DEFAULT_ROTATION
 
-    src_path = Path(source)
-    if not src_path.exists():
-        console.print(f"[red]No such path:[/red] {src_path}")
-        raise typer.Exit(1)
-    target = default_layout_lib_dir()
-    target.mkdir(parents=True, exist_ok=True)
-    if src_path.is_file():
-        layouts = ingest_pptx(src_path, save_to=target, name_prefix=name_prefix)
-    else:
-        layouts = ingest_folder(src_path, save_to=target)
+    slides = [
+        TitleSlide(
+            kind="title", title="Megadeck Showcase",
+            subtitle=f"Theme: {theme}",
+            presenter="Compositions × variants",
+        ),
+    ]
+    items_5 = [
+        BulletItem(head="Idea", tail="Find a real, painful problem."),
+        BulletItem(head="Build", tail="Smallest version that proves it works."),
+        BulletItem(head="Sell", tail="Charge early, charge often."),
+        BulletItem(head="Learn", tail="Talk to customers — every week."),
+        BulletItem(head="Repeat", tail="Iterate the loop, not the product."),
+    ]
+    cards_3 = [
+        CardItem(badge="01", label="Speed", description="Idea to slide in seconds."),
+        CardItem(badge="02", label="Audited", description="Geometric audits per slide."),
+        CardItem(badge="03", label="Open", description="MIT licensed, hackable."),
+    ]
+    for comp in DEFAULT_ROTATION:
+        slides.append(NumberedListSlide(
+            kind="numbered_list",
+            eyebrow=f"{comp.upper()} COMPOSITION",
+            title=f"This slide is {comp}.",
+            items=items_5,
+            composition=comp,
+        ))
+    # Variant slides
+    for variant in (None, "cards", "timeline", "split"):
+        slides.append(NumberedListSlide(
+            kind="numbered_list",
+            eyebrow=f"VARIANT: {variant or 'default'}",
+            title=f"numbered_list / {variant or 'default'}",
+            items=items_5,
+            variant=variant,
+            composition="typographic",
+        ))
+    for variant in (None, "centered", "mark", "full_bleed"):
+        slides.append(HeroStatementSlide(
+            kind="hero_statement",
+            eyebrow=f"VARIANT: {variant or 'default'}",
+            statement="Hard is good.",
+            supports=["Easy markets get crowded.", "Choose problems nobody wants to solve."],
+            variant=variant,
+            composition="typographic",
+        ))
+    for variant in (None, "staggered", "asymmetric"):
+        slides.append(ThreeCardSlide(
+            kind="three_card",
+            eyebrow=f"VARIANT: {variant or 'default'}",
+            title=f"three_card / {variant or 'default'}",
+            items=cards_3,
+            variant=variant,
+            composition="grid",
+        ))
+
+    deck = Deck(title="Megadeck Showcase", theme=theme, slides=slides)
+    render_deck(deck, output)
     console.print(
-        f"[green]✓[/green] Ingested [bold]{len(layouts)}[/bold] layouts from {src_path} "
-        f"→ {target}"
+        f"[green]✓[/green] Rendered showcase ({len(slides)} slides) → "
+        f"[bold]{output}[/bold]"
     )
 
 
-@layouts_app.command("list")
-def layouts_list_command(
-    kind: Optional[str] = typer.Option(
-        None, "--kind", "-k",
-        help="Filter by detected kind hint, e.g. 'numbered_list', 'hero_statement'.",
-    ),
-) -> None:
-    """List all registered layouts."""
-    from megadeck.design_system.layouts.registry import all_layouts
-
-    rows = all_layouts()
-    if kind:
-        rows = [l for l in rows if l.kind_hint == kind]
-    table = Table(title=f"Megadeck Layouts ({len(rows)})")
-    table.add_column("Name", style="cyan")
-    table.add_column("Kind hint")
-    table.add_column("Shapes", justify="right")
-    table.add_column("Source")
-    for lay in sorted(rows, key=lambda x: x.name):
-        table.add_row(lay.name, lay.kind_hint, str(len(lay.shapes)), lay.source)
-    console.print(table)
-    if not rows:
-        console.print(
-            "[yellow]No layouts ingested yet. Try:[/yellow]\n"
-            "    megadeck layouts ingest <path-to-folder-of-pptx>"
-        )
+pool_app = typer.Typer(help="Manage the design pool — pluggable theme JSON files.")
+app.add_typer(pool_app, name="pool")
 
 
 @pool_app.command("list")

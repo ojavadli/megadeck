@@ -1,37 +1,36 @@
-"""Slide compositions — *shape language*, not colour palette.
+"""Slide compositions — *bold, unmistakable shape language*.
 
-This module is the answer to "every slide looks the same with different
-colours". A composition decides *how* a slide is built up visually:
+Compositions are the answer to "every slide looks the same with different
+colours". Each composition decides *how* a slide is built up visually —
+not just colour palette but actual shape vocabulary.
 
-  * `typographic` — pure type, no shapes other than a hairline grid
-  * `swiss`       — strict 12-col grid, hairlines, accent block top-left,
-                    no decoration. International Typographic Style.
-  * `blueprint`   — graph-paper grid, technical hairline, monospaced
-                    eyebrow, mark-up overlays.
-  * `brutalist`   — heavy black shapes, raw geometry, no shadows, large
-                    typographic flexes. Blackletter accents.
-  * `editorial`   — magazine-style asymmetric grid with rule lines and
-                    drop caps. Generous negative space.
-  * `photographic`— dominant photo zone (or photo-placeholder) covering
-                    40-60% of the slide.
-  * `grid`        — explicit modular grid of cards / cells.
-  * `orbs`        — the previous default: glowing orbs in two corners
-                    (still available, just no longer mandatory).
+  * `typographic`  — pure type, no shapes other than negative space
+  * `swiss`        — chunky horizontal accent banner + double hairline rule.
+                     International Typographic Style by way of Müller-Brockmann.
+  * `blueprint`    — visible graph paper grid + corner crop marks +
+                     technical "MEGADECK / MM:SS" plate top-right.
+  * `brutalist`    — heavy black title bar across the top, thick left rail,
+                     loud bottom slab. Raw, unsentimental geometry.
+  * `editorial`    — magazine-style strong vertical rule at 7/12 columns +
+                     folio mark + drop-cap rule + horizontal kicker.
+  * `photographic` — gradient-tinted right 45% photo zone with caption rail.
+  * `grid`         — visible 12-column light grid + horizontal baseline.
+  * `mono-grid`    — IBM-Plex-Mono technical grid with axis labels.
+  * `bauhaus`      — primary-colour geometric blocks (red/yellow/blue) in
+                     deliberate asymmetric placement.
+  * `risograph`    — overlapping translucent shapes, one per accent colour.
+  * `orbs`         — legacy default (kept for back-compat, opt-in only).
 
-A composition is rendered AFTER the background fill but BEFORE template
-content. Each composition contributes only ambient design elements
-(grids, hairlines, photo zones, accent blocks). Templates draw on top.
-
-The result: two consecutive slides on the same theme can have completely
-different visual language even if they're the same kind.
+Compositions render AFTER the background fill but BEFORE template
+content. They are non-destructive design layers.
 """
 from __future__ import annotations
 
-import random
 from typing import Callable, Dict, Optional
 
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.slide import Slide
 from pptx.util import Inches, Pt
 
@@ -39,7 +38,6 @@ from megadeck.design_system.effects import apply_solid_fill
 from megadeck.design_system.tokens import Theme
 
 
-# Type alias for a composition function.
 CompositionFn = Callable[[Slide, Theme], None]
 COMPOSITIONS: Dict[str, CompositionFn] = {}
 
@@ -60,233 +58,330 @@ def _hex_to_rgb(h: str) -> RGBColor:
     return RGBColor.from_string(h)
 
 
-def _add_line(
+def _add_rect(
     slide: Slide,
     *,
     left: float, top: float, width: float, height: float,
-    color: RGBColor, weight_pt: float = 0.5,
-) -> None:
+    color: RGBColor, no_line: bool = True,
+):
     sh = slide.shapes.add_shape(
         MSO_SHAPE.RECTANGLE,
         Inches(left), Inches(top), Inches(width), Inches(height),
     )
     apply_solid_fill(sh, color)
-    sh.line.fill.background()
+    if no_line:
+        sh.line.fill.background()
     return sh
 
 
-def _add_text(slide: Slide, text: str, *, left: float, top: float, w: float, h: float,
-              color: RGBColor, font: str, size_pt: float, bold: bool = False) -> None:
+def _add_text(
+    slide: Slide, text: str,
+    *,
+    left: float, top: float, w: float, h: float,
+    color: RGBColor, font: str, size_pt: float,
+    bold: bool = False, italic: bool = False,
+    align: PP_ALIGN = PP_ALIGN.LEFT,
+):
     tb = slide.shapes.add_textbox(Inches(left), Inches(top), Inches(w), Inches(h))
     tf = tb.text_frame
     tf.word_wrap = True
     p = tf.paragraphs[0]
+    p.alignment = align
     r = p.add_run()
     r.text = text
     r.font.name = font
     r.font.size = Pt(size_pt)
     r.font.bold = bold
+    r.font.italic = italic
     r.font.color.rgb = color
 
 
 # ---------------------------------------------------------------------------
-# typographic — no shapes, pure space
+# typographic — pure space
 # ---------------------------------------------------------------------------
 
 @register_composition("typographic")
 def _typographic(slide: Slide, theme: Theme) -> None:
-    pass  # intentionally empty — typography only
+    """Pure typography. The template's text is the only design element."""
 
 
 # ---------------------------------------------------------------------------
-# swiss — strict grid, accent block, hairlines
+# swiss — chunky accent banner top-left + double hairline rule bottom
 # ---------------------------------------------------------------------------
 
 @register_composition("swiss")
 def _swiss(slide: Slide, theme: Theme) -> None:
-    slide_w = theme.slide_width_in
-    slide_h = theme.slide_height_in
-    accent = theme.accent
-    hairline = theme.hairline
-
-    # Single accent block top-left
-    _add_line(
-        slide, left=theme.left_margin_in, top=0.55, width=0.45, height=0.10,
-        color=accent,
-    )
-    # Vertical baseline rule on the right margin (1/3 down)
-    _add_line(
-        slide, left=slide_w - 0.45, top=0.55, width=0.012, height=slide_h - 1.20,
-        color=hairline,
-    )
-    # Horizontal baseline rule near bottom
-    _add_line(
-        slide, left=theme.left_margin_in, top=slide_h - 0.55,
-        width=slide_w - 2 * theme.left_margin_in, height=0.008,
-        color=hairline,
-    )
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
+    # Chunky accent banner top-left — was 0.45in × 0.10in, now 1.20in × 0.18in
+    _add_rect(slide, left=theme.left_margin_in, top=0.50,
+              width=1.20, height=0.18, color=theme.accent)
+    # Double hairline rule near bottom — much bolder than before
+    _add_rect(slide, left=theme.left_margin_in, top=sh - 0.55,
+              width=sw - 2 * theme.left_margin_in, height=0.025,
+              color=theme.title)
+    _add_rect(slide, left=theme.left_margin_in, top=sh - 0.50,
+              width=sw - 2 * theme.left_margin_in, height=0.012,
+              color=theme.hairline)
+    # Right-edge column rule (Müller-Brockmann signature)
+    _add_rect(slide, left=sw - 0.40, top=0.50,
+              width=0.025, height=sh - 1.0,
+              color=theme.title)
 
 
 # ---------------------------------------------------------------------------
-# blueprint — graph paper + corner crop marks
+# blueprint — graph-paper visible + corner crop marks + technical plate
 # ---------------------------------------------------------------------------
 
 @register_composition("blueprint")
 def _blueprint(slide: Slide, theme: Theme) -> None:
-    slide_w = theme.slide_width_in
-    slide_h = theme.slide_height_in
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
     grid_color = theme.hairline
 
-    # Vertical hairlines on a 1.0in grid
-    for i in range(1, int(slide_w)):
-        _add_line(
-            slide, left=float(i), top=0.0,
-            width=0.005, height=slide_h,
-            color=grid_color,
-        )
-    # Horizontal hairlines on a 1.0in grid
-    for i in range(1, int(slide_h)):
-        _add_line(
-            slide, left=0.0, top=float(i),
-            width=slide_w, height=0.005,
-            color=grid_color,
-        )
-    # Crop marks in the corners
-    crop = theme.muted
-    L = 0.30
+    # Major grid every 1.0in (visible)
+    for i in range(0, int(sw) + 1):
+        _add_rect(slide, left=float(i) - 0.005, top=0.0,
+                  width=0.012, height=sh, color=grid_color)
+    for i in range(0, int(sh) + 1):
+        _add_rect(slide, left=0.0, top=float(i) - 0.005,
+                  width=sw, height=0.012, color=grid_color)
+    # Minor grid every 0.25in (very faint)
+    light_grid = theme.muted
+    step = 0.25
+    x = step
+    while x < sw:
+        _add_rect(slide, left=x, top=0.0, width=0.005, height=sh, color=light_grid)
+        x += step
+    y = step
+    while y < sh:
+        _add_rect(slide, left=0.0, top=y, width=sw, height=0.005, color=light_grid)
+        y += step
+    # Corner crop marks — bigger and bolder
+    L = 0.40
+    crop = theme.title
     for cx, cy in (
-        (0.20, 0.20), (slide_w - 0.30, 0.20),
-        (0.20, slide_h - 0.30), (slide_w - 0.30, slide_h - 0.30),
+        (0.20, 0.20), (sw - 0.60, 0.20),
+        (0.20, sh - 0.60), (sw - 0.60, sh - 0.60),
     ):
-        _add_line(slide, left=cx, top=cy, width=L, height=0.012, color=crop)
-        _add_line(slide, left=cx, top=cy, width=0.012, height=L, color=crop)
+        _add_rect(slide, left=cx, top=cy, width=L, height=0.020, color=crop)
+        _add_rect(slide, left=cx, top=cy, width=0.020, height=L, color=crop)
+    # Technical plate top-right
+    _add_text(
+        slide, "DOC.001 / R0",
+        left=sw - 1.80, top=0.30, w=1.50, h=0.30,
+        color=theme.muted, font="IBM Plex Mono",
+        size_pt=9, align=PP_ALIGN.RIGHT,
+    )
 
 
 # ---------------------------------------------------------------------------
-# brutalist — heavy slabs, raw geometry
+# brutalist — heavy slabs everywhere
 # ---------------------------------------------------------------------------
 
 @register_composition("brutalist")
 def _brutalist(slide: Slide, theme: Theme) -> None:
-    slide_w = theme.slide_width_in
-    slide_h = theme.slide_height_in
-    title_color = theme.title
-
-    # Heavy black slab across the bottom 0.18in
-    _add_line(
-        slide, left=0.0, top=slide_h - 0.18,
-        width=slide_w, height=0.18,
-        color=title_color,
-    )
-    # Heavy left rail 0.20in
-    _add_line(
-        slide, left=0.0, top=0.0,
-        width=0.20, height=slide_h,
-        color=title_color,
-    )
-    # An asymmetric slab top-right
-    _add_line(
-        slide, left=slide_w - 1.30, top=0.55,
-        width=1.30, height=0.50,
-        color=theme.accent,
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
+    # Heavy left rail — 0.40in (was 0.20)
+    _add_rect(slide, left=0.0, top=0.0, width=0.40, height=sh, color=theme.title)
+    # Heavy bottom slab — 0.32in (was 0.18)
+    _add_rect(slide, left=0.0, top=sh - 0.32, width=sw, height=0.32, color=theme.title)
+    # Top-right loud accent slab
+    _add_rect(slide, left=sw - 2.40, top=0.40, width=2.40, height=0.65, color=theme.accent)
+    # White "01" inside the slab — brutalist numbering convention
+    _add_text(
+        slide, "01",
+        left=sw - 2.20, top=0.45, w=0.80, h=0.55,
+        color=_hex_to_rgb("FFFFFF"),
+        font=theme.font_display,
+        size_pt=44, bold=True,
     )
 
 
 # ---------------------------------------------------------------------------
-# editorial — asymmetric grid, drop-cap rule
+# editorial — magazine asymmetric grid + drop-cap rule
 # ---------------------------------------------------------------------------
 
 @register_composition("editorial")
 def _editorial(slide: Slide, theme: Theme) -> None:
-    slide_w = theme.slide_width_in
-    slide_h = theme.slide_height_in
-    rule = theme.hairline
-
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
     # Strong vertical rule at the 7/12 column position
-    rule_x = slide_w * (7 / 12)
-    _add_line(
-        slide, left=rule_x, top=0.65,
-        width=0.012, height=slide_h - 1.30,
-        color=rule,
+    rule_x = sw * (7 / 12)
+    _add_rect(slide, left=rule_x, top=0.65, width=0.020, height=sh - 1.30,
+              color=theme.title)
+    # Top horizontal kicker rule above title area
+    _add_rect(slide, left=theme.left_margin_in, top=1.06,
+              width=2.50, height=0.025, color=theme.accent)
+    # Folio mark top-right (issue / page)
+    _add_text(
+        slide, "ISSUE 01",
+        left=sw - 1.50, top=0.40, w=1.20, h=0.30,
+        color=theme.muted, font=theme.font_body,
+        size_pt=9, italic=True, align=PP_ALIGN.RIGHT,
     )
-    # Top eyebrow rule above title area
-    _add_line(
-        slide, left=theme.left_margin_in, top=1.10,
-        width=2.0, height=0.012,
-        color=theme.accent,
-    )
-    # A single accent square top-right (folio mark)
-    _add_line(
-        slide, left=slide_w - 0.80, top=0.55,
-        width=0.32, height=0.32,
-        color=theme.accent_lt,
+    # Bottom-edge editorial signature line
+    _add_rect(slide, left=theme.left_margin_in, top=sh - 0.60,
+              width=sw - 2 * theme.left_margin_in, height=0.012,
+              color=theme.hairline)
+    _add_text(
+        slide, "—  Megadeck Editorial",
+        left=theme.left_margin_in, top=sh - 0.45, w=4.0, h=0.30,
+        color=theme.muted, font=theme.font_body,
+        size_pt=9, italic=True,
     )
 
 
 # ---------------------------------------------------------------------------
-# photographic — large photo zone (placeholder card)
+# photographic — strong photo zone right
 # ---------------------------------------------------------------------------
 
 @register_composition("photographic")
 def _photographic(slide: Slide, theme: Theme) -> None:
-    slide_w = theme.slide_width_in
-    slide_h = theme.slide_height_in
-
-    # Photo-placeholder zone — right 45% of the slide
-    photo_w = slide_w * 0.45
-    photo_l = slide_w - photo_w
-    photo_t = 0.0
-    photo_h = slide_h
-    sh = slide.shapes.add_shape(
-        MSO_SHAPE.RECTANGLE,
-        Inches(photo_l), Inches(photo_t),
-        Inches(photo_w), Inches(photo_h),
-    )
-    apply_solid_fill(sh, theme.accent_lt)
-    sh.line.fill.background()
-    # Subtle rule between text and photo
-    _add_line(
-        slide, left=photo_l - 0.012, top=0.0,
-        width=0.012, height=slide_h,
-        color=theme.hairline,
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
+    photo_w = sw * 0.45
+    photo_l = sw - photo_w
+    _add_rect(slide, left=photo_l, top=0.0, width=photo_w, height=sh,
+              color=theme.accent_lt)
+    # Caption rail at the bottom
+    _add_rect(slide, left=photo_l, top=sh - 0.50,
+              width=photo_w, height=0.50,
+              color=theme.title)
+    _add_text(
+        slide, "FIG. 01  /  MEGADECK",
+        left=photo_l + 0.30, top=sh - 0.42,
+        w=photo_w - 0.60, h=0.30,
+        color=_hex_to_rgb("FFFFFF"),
+        font=theme.font_body, size_pt=10,
     )
 
 
 # ---------------------------------------------------------------------------
-# grid — modular 12-col cell ghosting
+# grid — visible 12-col grid + baseline
 # ---------------------------------------------------------------------------
 
 @register_composition("grid")
 def _grid(slide: Slide, theme: Theme) -> None:
-    slide_w = theme.slide_width_in
-    slide_h = theme.slide_height_in
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
     margin = theme.left_margin_in
     cells = 12
-    inner_w = slide_w - 2 * margin
+    inner_w = sw - 2 * margin
     col_w = inner_w / cells
-
-    # Ghost vertical column markers — TOP and BOTTOM 0.18in tick marks only
+    # Visible column rules — much bolder than before (0.014 vs 0.005)
     for i in range(cells + 1):
         x = margin + i * col_w
-        _add_line(
-            slide, left=x, top=0.40, width=0.006, height=0.18,
-            color=theme.hairline,
-        )
-        _add_line(
-            slide, left=x, top=slide_h - 0.55, width=0.006, height=0.18,
-            color=theme.hairline,
-        )
+        _add_rect(slide, left=x, top=0.50,
+                  width=0.014, height=sh - 1.00,
+                  color=theme.hairline)
+    # Strong horizontal baseline rule top + bottom
+    _add_rect(slide, left=margin, top=0.50, width=inner_w, height=0.025,
+              color=theme.title)
+    _add_rect(slide, left=margin, top=sh - 0.55, width=inner_w, height=0.025,
+              color=theme.title)
 
 
 # ---------------------------------------------------------------------------
-# orbs — the legacy default, kept for back-compat (still available)
+# mono-grid — IBM Plex Mono technical grid with axis labels
+# ---------------------------------------------------------------------------
+
+@register_composition("mono-grid")
+def _mono_grid(slide: Slide, theme: Theme) -> None:
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
+    # Mono ruler labels every 1.0in across the top
+    for i in range(0, int(sw) + 1):
+        _add_text(
+            slide, f"{i:02d}",
+            left=float(i) - 0.10, top=0.20, w=0.40, h=0.20,
+            color=theme.muted, font="IBM Plex Mono", size_pt=8,
+        )
+        _add_rect(slide, left=float(i), top=0.40, width=0.012, height=0.10,
+                  color=theme.muted)
+    # Top hairline
+    _add_rect(slide, left=0.0, top=0.50, width=sw, height=0.012,
+              color=theme.hairline)
+    # Bottom plate
+    _add_rect(slide, left=0.0, top=sh - 0.40, width=sw, height=0.012,
+              color=theme.hairline)
+    _add_text(
+        slide, "DECK / MEGADECK / VERSION 0.4",
+        left=theme.left_margin_in, top=sh - 0.30, w=4.0, h=0.20,
+        color=theme.muted, font="IBM Plex Mono", size_pt=8,
+    )
+
+
+# ---------------------------------------------------------------------------
+# bauhaus — primary-colour geometric blocks
+# ---------------------------------------------------------------------------
+
+@register_composition("bauhaus")
+def _bauhaus(slide: Slide, theme: Theme) -> None:
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
+    # Big yellow square top-right — Bauhaus primaries (we cheat and use accent
+    # variants if the theme doesn't have true primaries).
+    yellow = _hex_to_rgb("FFD500")
+    red = _hex_to_rgb("E53935")
+    blue = _hex_to_rgb("1565C0")
+    # Bottom-right blue triangle (using a right triangle shape)
+    triangle = slide.shapes.add_shape(
+        MSO_SHAPE.RIGHT_TRIANGLE,
+        Inches(sw - 1.80), Inches(sh - 1.80),
+        Inches(1.80), Inches(1.80),
+    )
+    apply_solid_fill(triangle, blue)
+    triangle.line.fill.background()
+    # Top-right yellow square
+    _add_rect(slide, left=sw - 1.30, top=0.30, width=1.0, height=1.0,
+              color=yellow)
+    # Mid-bottom red circle
+    circ = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL,
+        Inches(0.40), Inches(sh - 1.20),
+        Inches(0.70), Inches(0.70),
+    )
+    apply_solid_fill(circ, red)
+    circ.line.fill.background()
+
+
+# ---------------------------------------------------------------------------
+# risograph — overlapping translucent shapes
+# ---------------------------------------------------------------------------
+
+@register_composition("risograph")
+def _risograph(slide: Slide, theme: Theme) -> None:
+    """Overlapping circles in two ink colours, low-fi print aesthetic."""
+    from megadeck.design_system.effects import apply_solid_fill
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
+    # Two overlapping circles bottom-right — pinkish + teal-ish from theme accents
+    c1 = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL,
+        Inches(sw - 3.00), Inches(sh - 2.50),
+        Inches(2.40), Inches(2.40),
+    )
+    apply_solid_fill(c1, theme.accent, alpha=70)
+    c1.line.fill.background()
+    c2 = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL,
+        Inches(sw - 1.80), Inches(sh - 2.00),
+        Inches(2.00), Inches(2.00),
+    )
+    apply_solid_fill(c2, theme.accent_lt, alpha=80)
+    c2.line.fill.background()
+
+
+# ---------------------------------------------------------------------------
+# orbs — legacy default (still available, opt-in only)
 # ---------------------------------------------------------------------------
 
 @register_composition("orbs")
 def _orbs(slide: Slide, theme: Theme) -> None:
-    """The original default: two glowing orbs. Kept opt-in only."""
+    """Legacy default: glowing orbs. Kept for back-compat."""
     from megadeck.design_system.decorations import apply_decorations
-
     apply_decorations(slide, theme)
 
 
@@ -295,11 +390,7 @@ def _orbs(slide: Slide, theme: Theme) -> None:
 # ---------------------------------------------------------------------------
 
 def apply_composition(slide: Slide, theme: Theme, *, override: Optional[str] = None) -> str:
-    """Apply a composition to the slide. Returns the composition name used.
-
-    If `override` names a composition that isn't registered, we silently
-    fall back to 'typographic' (and report it as such).
-    """
+    """Apply a composition. Returns the composition name actually rendered."""
     requested = override or getattr(theme, "composition", None) or "typographic"
     fn = COMPOSITIONS.get(requested)
     if fn is None:
@@ -309,10 +400,12 @@ def apply_composition(slide: Slide, theme: Theme, *, override: Optional[str] = N
     return requested
 
 
-# Default rotation order — used by the rhythm orchestrator.
+# Default rotation order — used by rhythm orchestrator. Adjacent slides
+# get visually different compositions.
 DEFAULT_ROTATION = [
     "typographic", "swiss", "editorial", "blueprint",
-    "grid", "brutalist", "photographic",
+    "grid", "brutalist", "photographic", "mono-grid",
+    "bauhaus", "risograph",
 ]
 
 

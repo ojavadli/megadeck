@@ -1,0 +1,18 @@
+{
+  "name": "seed-brutalist-stack",
+  "source": "hand-authored",
+  "kind_hint": "manifesto",
+  "slide_w_in": 13.333,
+  "slide_h_in": 7.5,
+  "description": "Brutalist: black slab top, huge title, stacked numbered manifesto.",
+  "palette": [],
+  "shapes": [
+    {"role": "decoration", "left_in": 0.0, "top_in": 0.0, "width_in": 13.333, "height_in": 1.20, "z": 0},
+    {"role": "eyebrow", "left_in": 0.6, "top_in": 0.40, "width_in": 6.0, "height_in": 0.40, "font_size_pt": 12, "z": 1},
+    {"role": "title", "left_in": 0.6, "top_in": 1.60, "width_in": 12.0, "height_in": 2.30, "font_size_pt": 72, "font_bold": true, "z": 2},
+    {"role": "body", "left_in": 0.6, "top_in": 4.30, "width_in": 11.5, "height_in": 0.50, "font_size_pt": 16, "font_bold": true, "z": 3},
+    {"role": "body", "left_in": 0.6, "top_in": 5.00, "width_in": 11.5, "height_in": 0.50, "font_size_pt": 16, "font_bold": true, "z": 4},
+    {"role": "body", "left_in": 0.6, "top_in": 5.70, "width_in": 11.5, "height_in": 0.50, "font_size_pt": 16, "font_bold": true, "z": 5},
+    {"role": "body", "left_in": 0.6, "top_in": 6.40, "width_in": 11.5, "height_in": 0.50, "font_size_pt": 16, "font_bold": true, "z": 6}
+  ]
+}

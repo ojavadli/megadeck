@@ -1,0 +1,21 @@
+{
+  "name": "seed-kpi-bento",
+  "source": "hand-authored",
+  "kind_hint": "kpi_grid",
+  "slide_w_in": 13.333,
+  "slide_h_in": 7.5,
+  "description": "4-card bento: one big card top-left, three medium cards arranged around it.",
+  "palette": [],
+  "shapes": [
+    {"role": "eyebrow", "left_in": 0.6, "top_in": 0.55, "width_in": 5.0, "height_in": 0.30, "font_size_pt": 11, "z": 0},
+    {"role": "title", "left_in": 0.6, "top_in": 1.0, "width_in": 12.0, "height_in": 0.90, "font_size_pt": 36, "font_bold": true, "z": 1},
+    {"role": "decoration", "left_in": 0.6, "top_in": 2.20, "width_in": 6.20, "height_in": 4.50, "z": 2},
+    {"role": "body", "left_in": 0.95, "top_in": 2.50, "width_in": 5.50, "height_in": 4.0, "font_size_pt": 18, "font_bold": true, "z": 3},
+    {"role": "decoration", "left_in": 7.00, "top_in": 2.20, "width_in": 5.80, "height_in": 2.10, "z": 4},
+    {"role": "body", "left_in": 7.30, "top_in": 2.40, "width_in": 5.20, "height_in": 1.80, "font_size_pt": 14, "z": 5},
+    {"role": "decoration", "left_in": 7.00, "top_in": 4.50, "width_in": 2.80, "height_in": 2.20, "z": 6},
+    {"role": "body", "left_in": 7.20, "top_in": 4.70, "width_in": 2.50, "height_in": 1.90, "font_size_pt": 14, "z": 7},
+    {"role": "decoration", "left_in": 10.00, "top_in": 4.50, "width_in": 2.80, "height_in": 2.20, "z": 8},
+    {"role": "body", "left_in": 10.20, "top_in": 4.70, "width_in": 2.50, "height_in": 1.90, "font_size_pt": 14, "z": 9}
+  ]
+}

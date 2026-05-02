@@ -1,0 +1,16 @@
+{
+  "name": "seed-photo-split",
+  "source": "hand-authored",
+  "kind_hint": "photo_card",
+  "slide_w_in": 13.333,
+  "slide_h_in": 7.5,
+  "description": "Photo + text split: full-bleed photo right 50%, text-and-rule left.",
+  "palette": [],
+  "shapes": [
+    {"role": "image", "left_in": 6.66, "top_in": 0.0, "width_in": 6.67, "height_in": 7.5, "z": 0},
+    {"role": "eyebrow", "left_in": 0.60, "top_in": 0.55, "width_in": 5.0, "height_in": 0.30, "font_size_pt": 11, "z": 1},
+    {"role": "title", "left_in": 0.60, "top_in": 1.20, "width_in": 5.80, "height_in": 3.0, "font_size_pt": 56, "font_bold": true, "font_name": "Playfair Display", "z": 2},
+    {"role": "decoration", "left_in": 0.60, "top_in": 4.50, "width_in": 1.80, "height_in": 0.030, "z": 3},
+    {"role": "body", "left_in": 0.60, "top_in": 4.80, "width_in": 5.80, "height_in": 1.80, "font_size_pt": 14, "z": 4}
+  ]
+}
