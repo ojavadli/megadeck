@@ -10,7 +10,7 @@ rebuilding from scratch.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from pptx import Presentation
 from pptx.slide import Slide as PptxSlide
@@ -30,13 +30,31 @@ from megadeck.core.schemas import (
 )
 
 
-def _slide_text_blocks(slide: PptxSlide) -> List[str]:
-    blocks: List[str] = []
+def _slide_text_blocks(slide: PptxSlide) -> List[Tuple[str, float, float]]:
+    """Return [(text, top_in, font_size_pt), ...] sorted by vertical position.
+
+    Position-aware extraction lets us detect titles (large, near-top) vs body
+    (smaller, lower) much more reliably than treating every text frame the same.
+    """
+    blocks: List[Tuple[str, float, float]] = []
     for shape in slide.shapes:
-        if shape.has_text_frame:
-            txt = shape.text_frame.text.strip()
-            if txt:
-                blocks.append(txt)
+        if not shape.has_text_frame:
+            continue
+        txt = shape.text_frame.text.strip()
+        if not txt:
+            continue
+        top_in = (shape.top or 0) / 914400.0
+        # Approximate dominant font size by inspecting first run that has size set
+        font_pt = 0.0
+        for para in shape.text_frame.paragraphs:
+            for run in para.runs:
+                if run.font.size:
+                    font_pt = run.font.size.pt
+                    break
+            if font_pt:
+                break
+        blocks.append((txt, top_in, font_pt))
+    blocks.sort(key=lambda b: (b[1], -b[2]))
     return blocks
 
 
@@ -59,7 +77,9 @@ def _extract_speaker_notes(slide: PptxSlide) -> str:
     return tf.text.strip()
 
 
-def _classify_slide(blocks: List[str], idx: int, total: int) -> SlideUnion:
+def _classify_slide(
+    blocks: List[Tuple[str, float, float]], idx: int, total: int
+) -> SlideUnion:
     """Pick a Megadeck slide kind from the raw text on a pptx slide."""
     notes = ""  # caller adds this back
 
@@ -72,42 +92,56 @@ def _classify_slide(blocks: List[str], idx: int, total: int) -> SlideUnion:
             transition=TransitionKind.FADE,
         )
 
+    # Pick the title: prefer the largest font near the top.
+    by_size = sorted(blocks, key=lambda b: -b[2])
+    title_block = by_size[0] if by_size[0][2] > 0 else blocks[0]
+    title = title_block[0][:108]
+
+    # Build the body from everything else, in original (top-down) order.
+    body = [b[0] for b in blocks if b[0] != title_block[0]]
+    eyebrow_text: Optional[str] = None
+    # If there's a tiny eyebrow above the title (small font, near-top), capture it
+    above_title = [
+        b for b in blocks
+        if b[1] < title_block[1] and b[2] and b[2] < title_block[2]
+    ]
+    if above_title:
+        eyebrow_text = above_title[0][0][:38]
+        body = [b for b in body if b != above_title[0][0]]
+
     # First slide → cover
-    if idx == 0 and len(blocks) <= 4:
-        title = blocks[0][:108]
-        subtitle = blocks[1][:138] if len(blocks) > 1 else None
-        presenter = blocks[2][:78] if len(blocks) > 2 else None
-        date = blocks[3][:38] if len(blocks) > 3 else None
+    if idx == 0 and len(body) <= 3:
+        subtitle = body[0][:138] if body else None
+        presenter = body[1][:78] if len(body) > 1 else None
+        date = body[2][:38] if len(body) > 2 else None
         return TitleSlide(
-            kind="title", eyebrow="", title=title, subtitle=subtitle,
+            kind="title", eyebrow=eyebrow_text or "",
+            title=title, subtitle=subtitle,
             presenter=presenter, date=date, notes=notes,
             transition=TransitionKind.FADE,
         )
 
-    title = blocks[0][:108]
-    rest = blocks[1:]
-
-    # Hero-statement heuristic: very short title, very few other blocks
-    if len(title) <= 40 and len(rest) <= 4:
+    # Hero-statement heuristic: very short title and few other blocks
+    if len(title) <= 50 and len(body) <= 4 and not any(len(b) > 200 for b in body):
         return HeroStatementSlide(
             kind="hero_statement",
-            eyebrow=f"Slide {idx + 1:02d}",
-            statement=title,
-            supports=[r[:160] for r in rest][:4],
+            eyebrow=eyebrow_text or f"Slide {idx + 1:02d}",
+            statement=title[:78],
+            supports=[r[:160] for r in body][:4],
             notes=notes,
             transition=TransitionKind.FADE,
         )
 
-    # Long bullety text → numbered_list
+    # Default → numbered_list. Split each body line into head+tail.
     bullets = []
-    for line in rest[:6]:
+    for line in body[:6]:
         head, tail = _split_head_tail(line)
         bullets.append(BulletItem(head=head[:78], tail=tail[:200]))
     if len(bullets) < 2:
         bullets.extend([BulletItem(head="(detail)", tail="") for _ in range(2 - len(bullets))])
     return NumberedListSlide(
         kind="numbered_list",
-        eyebrow=f"Imported slide {idx + 1:02d}",
+        eyebrow=eyebrow_text or f"Slide {idx + 1:02d}",
         title=title,
         items=bullets,
         notes=notes,
