@@ -22,9 +22,17 @@ from fastmcp import FastMCP
 from megadeck.core.critic import audit_deck as audit_deck_core
 from megadeck.core.import_pptx import import_pptx
 from megadeck.core.llm import generate_deck as llm_generate
+from megadeck.core.pptx_audit import audit_pptx, summarize_audit
 from megadeck.core.preview import render_pptx_to_pngs
 from megadeck.core.renderer import render_deck
-from megadeck.design_system.tokens import list_themes
+from megadeck.core.selfheal import render_with_selfheal
+from megadeck.design_system.registry import (
+    default_pool_dir,
+    register_pool_theme_from_dict,
+    sync_default_pool,
+    theme_to_dict,
+)
+from megadeck.design_system.tokens import get_theme, list_themes
 
 
 mcp = FastMCP(
@@ -147,6 +155,91 @@ def list_templates_tool() -> list[dict]:
         {"kind": "step_diagram", "use": "3-5 sequential steps with arrows."},
         {"kind": "code_snippet", "use": "Themed code block with language tag."},
     ]
+
+
+@mcp.tool()
+def pptx_audit_tool(pptx_path: str) -> dict:
+    """Fast shape-level audit (overlap / overflow / off-canvas).
+
+    Returns per-slide issues + a summary count by category. Deterministic,
+    no LLM call, runs in < 50ms per slide. Pair with `render_strict_tool`
+    when you want builds to fail on issues.
+    """
+    audit = audit_pptx(pptx_path)
+    summary = summarize_audit(audit)
+    out = {
+        label: [
+            {
+                "issue": i.issue,
+                "severity": i.severity,
+                "detail": i.detail,
+                "shape_idxs": list(i.shape_idxs),
+            }
+            for i in issues
+        ]
+        for label, issues in audit.items()
+    }
+    out["_summary"] = summary
+    return out
+
+
+@mcp.tool()
+def render_strict_tool(
+    pptx_path: str,
+    output_path: str = "reskinned.pptx",
+    theme: str = "default",
+    max_iters: int = 4,
+) -> dict:
+    """Import, render, audit, and self-heal until clean (or `max_iters` reached).
+
+    The self-heal loop edits the deck DSL between renders (drops trailing
+    items, clips long tails, shrinks supports) so each pass is fully
+    deterministic. Returns the final audit summary; `errors` will be 0
+    iff the result is publishable.
+    """
+    deck = import_pptx(pptx_path, theme=theme)
+    out, summary = render_with_selfheal(deck, output_path, max_iters=max_iters)
+    return {
+        "output_path": str(out.resolve()),
+        "slide_count": len(deck.slides),
+        "theme": theme,
+        "audit_summary": summary,
+        "clean": summary.get("_errors", 0) == 0,
+    }
+
+
+@mcp.tool()
+def pool_register_theme_tool(theme_json: dict) -> dict:
+    """Register a new theme into the live registry from a JSON-shaped dict.
+
+    The dict must contain a `name`. Colour fields accept #RRGGBB strings.
+    Anything not specified is sensibly derived (e.g. `inverse` flips on
+    `title` luminance).
+
+    Returns the parsed theme as a normalised dict, useful so callers can
+    confirm what got registered.
+    """
+    t = register_pool_theme_from_dict(theme_json)
+    return {"name": t.name, "description": t.description, "spec": theme_to_dict(t)}
+
+
+@mcp.tool()
+def pool_export_theme_tool(name: str) -> dict:
+    """Export an existing theme as JSON. Round-trippable via
+    pool_register_theme_tool — useful for forking a built-in theme."""
+    return theme_to_dict(get_theme(name))
+
+
+@mcp.tool()
+def pool_sync_tool() -> dict:
+    """Re-load every JSON in the default pool directory. Returns the names
+    of themes that loaded successfully."""
+    loaded = sync_default_pool()
+    return {
+        "pool_dir": str(default_pool_dir()),
+        "loaded": [t.name for t in loaded],
+        "count": len(loaded),
+    }
 
 
 def main() -> None:
