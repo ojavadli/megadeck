@@ -3,17 +3,21 @@
 PowerPoint's animation system is keyframe-based; we generate the appropriate
 `<p:timing>` block per slide and stagger entrances by a configurable delay.
 
-This module is intentionally narrow: it covers the entrance presets that map
-cleanly onto pptx's native animation primitives. It does not try to emulate
-spring-physics, gesture-driven, or layout animations — those are browser-only.
+The choreography (which-shape-when) is computed by `megadeck.animations.choreography`
+which is itself a port of Motion's `stagger()` function. A spring or named easing
+on the `--motion-spring` / `--motion-easing` CLI flag maps onto delay distribution
+exactly like Motion's WAAPI orchestration examples.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, List
+from typing import Iterable, List, Optional, Union
 
 from lxml import etree
 
+from megadeck.animations.choreography import StaggerOrigin, materialise_stagger
+from megadeck.animations.easing import EasingFn
+from megadeck.animations.spring import Spring
 from megadeck.core.schemas import EntranceKind
 
 
@@ -63,26 +67,55 @@ def stagger_entrance(
     duration_ms: int = 350,
     stagger_ms: int = 80,
     skip_first_n: int = 0,
+    origin: StaggerOrigin = "first",
+    easing: Optional[Union[str, EasingFn]] = None,
+    spring: Optional[Spring] = None,
 ) -> None:
     """Apply a staggered entrance animation to every shape on the slide.
 
-    `skip_first_n` is useful to leave the page chrome (footer / dot grid)
-    visible from the start.
+    The delay distribution is computed via `materialise_stagger()` which is
+    a port of Motion's stagger function — pass `origin="center"` for a
+    rippling out-from-the-middle effect, or `easing="back-out"` to make the
+    cascade itself eased.
+
+    If `spring` is supplied, the per-shape `duration_ms` is overridden by
+    the spring's calculated rest time (computed via Motion's spring solver).
     """
     if kind == EntranceKind.NONE:
         return
     shape_ids = _shape_ids(slide_elem)
+    targets = shape_ids[skip_first_n:]
+    if not targets:
+        return
+
+    delays_s = materialise_stagger(
+        len(targets),
+        duration_s=stagger_ms / 1000.0,
+        origin=origin,
+        easing=easing,
+    )
+
+    # If a spring is supplied, derive the per-shape duration from the spring's
+    # natural settling time. We sample the spring until velocity falls under
+    # restSpeed (matching Motion's spring.next() done condition).
+    per_shape_ms = duration_ms
+    if spring is not None:
+        for t_step in range(50, 4001, 50):
+            if abs(spring.velocity_per_s(t_step)) < 2.0 and abs(
+                spring.target - spring.position(t_step)
+            ) < 0.5:
+                per_shape_ms = t_step
+                break
+
     plans = [
         EntrancePlan(
             shape_id=sid,
             kind=kind,
-            delay_ms=i * stagger_ms,
-            duration_ms=duration_ms,
+            delay_ms=int(round(delays_s[i] * 1000)),
+            duration_ms=int(per_shape_ms),
         )
-        for i, sid in enumerate(shape_ids[skip_first_n:])
+        for i, sid in enumerate(targets)
     ]
-    if not plans:
-        return
     apply_entrances(slide_elem, plans)
 
 
