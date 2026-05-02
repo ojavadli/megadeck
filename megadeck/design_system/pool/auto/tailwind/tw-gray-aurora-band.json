@@ -1,0 +1,38 @@
+{
+  "name": "tw-gray-aurora-band",
+  "description": "Tailwind gray (aurora-band).",
+  "bg": "#f9fafb",
+  "surface": "#F2F4F6",
+  "overlay": "#E9EDF0",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#6b7280",
+  "accent_dk": "#374151",
+  "accent_lt": "#e5e7eb",
+  "accent_bg": "#CACDD3",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#E0E5EA",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "glass",
+  "accent_glow": true,
+  "decorations": [
+    {
+      "kind": "aurora_band",
+      "colors": [
+        "#6b7280",
+        "#786B80",
+        "#6B8079"
+      ],
+      "angle_deg": 18,
+      "band_height_in": 4.5,
+      "y_frac": 0.42
+    }
+  ]
+}

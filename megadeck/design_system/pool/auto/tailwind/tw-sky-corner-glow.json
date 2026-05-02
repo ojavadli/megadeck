@@ -1,0 +1,34 @@
+{
+  "name": "tw-sky-corner-glow",
+  "description": "Tailwind sky (corner-glow).",
+  "bg": "#f0f9ff",
+  "surface": "#E5F4FF",
+  "overlay": "#D6EEFE",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#0ea5e9",
+  "accent_dk": "#0369a1",
+  "accent_lt": "#bae6fd",
+  "accent_bg": "#AFE2FA",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#C7E8FF",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "decorations": [
+    {
+      "kind": "corner_glow",
+      "corner": "tr",
+      "color": "#0ea5e9",
+      "alpha_pct": 35,
+      "radius_frac": 0.65
+    }
+  ]
+}

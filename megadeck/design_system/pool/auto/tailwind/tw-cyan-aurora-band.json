@@ -1,0 +1,38 @@
+{
+  "name": "tw-cyan-aurora-band",
+  "description": "Tailwind cyan (aurora-band).",
+  "bg": "#ecfeff",
+  "surface": "#E1FDFF",
+  "overlay": "#D2FCFE",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#06b6d4",
+  "accent_dk": "#0e7490",
+  "accent_lt": "#a5f3fc",
+  "accent_bg": "#90ECFB",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#C3FBFF",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "glass",
+  "accent_glow": true,
+  "decorations": [
+    {
+      "kind": "aurora_band",
+      "colors": [
+        "#06b6d4",
+        "#2406D4",
+        "#06D424"
+      ],
+      "angle_deg": 18,
+      "band_height_in": 4.5,
+      "y_frac": 0.42
+    }
+  ]
+}

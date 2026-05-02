@@ -1,0 +1,34 @@
+{
+  "name": "tw-lime-corner-glow",
+  "description": "Tailwind lime (corner-glow).",
+  "bg": "#f7fee7",
+  "surface": "#F3FDDD",
+  "overlay": "#EEFCCE",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#84cc16",
+  "accent_dk": "#4d7c0f",
+  "accent_lt": "#d9f99d",
+  "accent_bg": "#D3F49F",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#E9FCBF",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "decorations": [
+    {
+      "kind": "corner_glow",
+      "corner": "tr",
+      "color": "#84cc16",
+      "alpha_pct": 35,
+      "radius_frac": 0.65
+    }
+  ]
+}

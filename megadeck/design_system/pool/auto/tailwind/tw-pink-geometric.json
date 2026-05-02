@@ -1,0 +1,55 @@
+{
+  "name": "tw-pink-geometric",
+  "description": "Tailwind pink (geometric).",
+  "bg": "#fdf2f8",
+  "surface": "#FBE9F3",
+  "overlay": "#F9DBEC",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#ec4899",
+  "accent_dk": "#be185d",
+  "accent_lt": "#fbcfe8",
+  "accent_bg": "#FCE9F3",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#F7CEE4",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {
+      "kind": "geometric",
+      "shape": "circle",
+      "x": 0.88,
+      "y": 0.18,
+      "size_in": 1.2,
+      "color": "#ec4899",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "triangle",
+      "x": 0.06,
+      "y": 0.85,
+      "size_in": 1.4,
+      "color": "#99EC48",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "square",
+      "x": 0.92,
+      "y": 0.78,
+      "size_in": 0.9,
+      "color": "#4898EC",
+      "alpha_pct": 100,
+      "rotation_deg": 12
+    }
+  ]
+}

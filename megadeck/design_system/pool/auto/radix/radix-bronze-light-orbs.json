@@ -1,0 +1,47 @@
+{
+  "name": "radix-bronze-light-orbs",
+  "description": "Radix bronze (light, orbs).",
+  "bg": "#FDFCFB",
+  "surface": "#F9F6F4",
+  "overlay": "#F4EFE9",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#A18072",
+  "accent_dk": "#7D5E54",
+  "accent_lt": "#EEDED1",
+  "accent_bg": "#E8E0DD",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#EFE7DF",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#A18072",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#93A171",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

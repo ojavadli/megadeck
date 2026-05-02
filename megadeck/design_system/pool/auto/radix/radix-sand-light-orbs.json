@@ -1,0 +1,47 @@
+{
+  "name": "radix-sand-light-orbs",
+  "description": "Radix sand (light, orbs).",
+  "bg": "#FDFDFC",
+  "surface": "#F8F8F5",
+  "overlay": "#F2F2EC",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#8D8D86",
+  "accent_dk": "#63635E",
+  "accent_lt": "#EEEEEC",
+  "accent_bg": "#E3E3E1",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#ECECE3",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#8D8D86",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#868D86",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

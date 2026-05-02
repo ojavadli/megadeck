@@ -1,0 +1,47 @@
+{
+  "name": "radix-crimson-dark-orbs",
+  "description": "Radix crimson (dark, orbs).",
+  "bg": "#191114",
+  "surface": "#281B20",
+  "overlay": "#37252C",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#191114",
+  "accent": "#E93D82",
+  "accent_dk": "#FF92AD",
+  "accent_lt": "#38122D",
+  "accent_bg": "#670B30",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#312127",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#E93D82",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#E8A33D",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

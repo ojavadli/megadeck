@@ -1,0 +1,38 @@
+{
+  "name": "tw-yellow-aurora-band",
+  "description": "Tailwind yellow (aurora-band).",
+  "bg": "#fefce8",
+  "surface": "#FDFADE",
+  "overlay": "#FCF8CF",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#eab308",
+  "accent_dk": "#a16207",
+  "accent_lt": "#fef08a",
+  "accent_bg": "#FCE7A8",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#FCF6C0",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "glass",
+  "accent_glow": true,
+  "decorations": [
+    {
+      "kind": "aurora_band",
+      "colors": [
+        "#eab308",
+        "#3EEA08",
+        "#EA083E"
+      ],
+      "angle_deg": 18,
+      "band_height_in": 4.5,
+      "y_frac": 0.42
+    }
+  ]
+}

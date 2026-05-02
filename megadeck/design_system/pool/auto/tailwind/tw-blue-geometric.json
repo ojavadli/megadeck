@@ -1,0 +1,55 @@
+{
+  "name": "tw-blue-geometric",
+  "description": "Tailwind blue (geometric).",
+  "bg": "#eff6ff",
+  "surface": "#E4F0FF",
+  "overlay": "#D5E7FE",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#3b82f6",
+  "accent_dk": "#1d4ed8",
+  "accent_lt": "#bfdbfe",
+  "accent_bg": "#E5EEFD",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#C6DFFF",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {
+      "kind": "geometric",
+      "shape": "circle",
+      "x": 0.88,
+      "y": 0.18,
+      "size_in": 1.2,
+      "color": "#3b82f6",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "triangle",
+      "x": 0.06,
+      "y": 0.85,
+      "size_in": 1.4,
+      "color": "#F63A81",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "square",
+      "x": 0.92,
+      "y": 0.78,
+      "size_in": 0.9,
+      "color": "#81F63A",
+      "alpha_pct": 100,
+      "rotation_deg": 12
+    }
+  ]
+}

@@ -337,6 +337,80 @@ def pool_sync_command() -> None:
     )
 
 
+@pool_app.command("generate")
+def pool_generate_command(
+    source: str = typer.Argument(
+        "all",
+        help="Adapter to run: tailwind / catppuccin / radix / open-color / all.",
+    ),
+) -> None:
+    """Bulk-generate hundreds of themes from open-source ecosystems.
+
+    `source=all` produces ~700 themes. Each adapter is sourced from the
+    public colour spec of a major design system (Tailwind, Catppuccin,
+    Radix, Open Color) — see megadeck/design_system/adapters/ for the
+    licensed source citations.
+    """
+    from megadeck.design_system.adapters.bulk_generate import (
+        SOURCES,
+        generate_all,
+    )
+    target = default_pool_dir() / "auto"
+    sources = None if source == "all" else [source]
+    if sources is not None and sources[0] not in SOURCES:
+        console.print(
+            f"[red]Unknown source:[/red] {source}. Known: {sorted(SOURCES)}"
+        )
+        raise typer.Exit(1)
+    written = generate_all(target, sources)
+    console.print(
+        f"[green]✓[/green] Wrote [bold]{len(written)}[/bold] themes to "
+        f"{target} (run [italic]megadeck pool sync[/italic] to register)."
+    )
+    sync_default_pool()
+    console.print(
+        f"[green]✓[/green] Synced; live registry has [bold]"
+        f"{len(set(list_pool_themes()))}[/bold] themes total."
+    )
+
+
+@pool_app.command("install-vscode")
+def pool_install_vscode_command(
+    source: str = typer.Argument(
+        ...,
+        help="Path or HTTPS URL of a VSCode theme.json.",
+    ),
+) -> None:
+    """Convert a VSCode theme.json into a megadeck theme and install it.
+
+    VSCode marketplace exposes thousands of themes as plain JSON; pass any
+    theme.json (file or URL) and megadeck will adapt the colour mappings.
+    """
+    import json as _json
+    import urllib.request
+    from megadeck.design_system.adapters.vscode import vscode_theme_to_megadeck
+    if source.startswith(("http://", "https://")):
+        with urllib.request.urlopen(source, timeout=10) as resp:
+            data = _json.loads(resp.read().decode("utf-8"))
+    else:
+        data = _json.loads(Path(source).read_text(encoding="utf-8"))
+    spec = vscode_theme_to_megadeck(data)
+    register_pool_theme(load_theme_json_dict(spec))
+    out = default_pool_dir() / "auto" / f"{spec['name']}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(_json.dumps(spec, indent=2), encoding="utf-8")
+    console.print(
+        f"[green]✓[/green] Installed VSCode theme [bold]{spec['name']}[/bold] "
+        f"→ {out}"
+    )
+
+
+def load_theme_json_dict(d: dict):
+    """Helper: build a Theme from an in-memory dict (used by install-vscode)."""
+    from megadeck.design_system.registry import theme_from_dict
+    return theme_from_dict(d)
+
+
 # ----- Helpers -----------------------------------------------------------------
 
 def _format_audit(report) -> Panel:

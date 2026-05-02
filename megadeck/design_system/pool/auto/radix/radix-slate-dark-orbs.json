@@ -1,0 +1,47 @@
+{
+  "name": "radix-slate-dark-orbs",
+  "description": "Radix slate (dark, orbs).",
+  "bg": "#111113",
+  "surface": "#1D1D20",
+  "overlay": "#29292D",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#111113",
+  "accent": "#797A86",
+  "accent_dk": "#B0B4BA",
+  "accent_lt": "#26282E",
+  "accent_bg": "#242428",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#242428",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#797A86",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#857986",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

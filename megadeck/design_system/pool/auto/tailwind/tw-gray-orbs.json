@@ -1,0 +1,47 @@
+{
+  "name": "tw-gray-orbs",
+  "description": "Tailwind gray (orbs).",
+  "bg": "#030712",
+  "surface": "#060F27",
+  "overlay": "#0A173D",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#030712",
+  "accent": "#6b7280",
+  "accent_dk": "#374151",
+  "accent_lt": "#e5e7eb",
+  "accent_bg": "#191B1E",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#081434",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#6b7280",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#786B80",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

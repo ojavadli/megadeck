@@ -1,0 +1,47 @@
+{
+  "name": "radix-tomato-light-orbs",
+  "description": "Radix tomato (light, orbs).",
+  "bg": "#FFFCFC",
+  "surface": "#FFF1F1",
+  "overlay": "#FFE2E2",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#E54D2E",
+  "accent_dk": "#CA3214",
+  "accent_lt": "#FFE6E2",
+  "accent_bg": "#F8D4CC",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#FED3D3",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#E54D2E",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#C5E52D",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

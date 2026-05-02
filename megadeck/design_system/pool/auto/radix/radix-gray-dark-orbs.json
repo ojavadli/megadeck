@@ -1,0 +1,47 @@
+{
+  "name": "radix-gray-dark-orbs",
+  "description": "Radix gray (dark, orbs).",
+  "bg": "#111111",
+  "surface": "#1D1D1D",
+  "overlay": "#2A2A2A",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#111111",
+  "accent": "#7B7B7B",
+  "accent_dk": "#B4B4B4",
+  "accent_lt": "#2A2A2A",
+  "accent_bg": "#212121",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#252525",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#7B7B7B",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#7B7B7B",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

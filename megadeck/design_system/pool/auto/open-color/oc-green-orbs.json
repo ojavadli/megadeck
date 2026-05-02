@@ -1,0 +1,47 @@
+{
+  "name": "oc-green-orbs",
+  "description": "Open Color green (orbs).",
+  "bg": "#ebfbee",
+  "surface": "#E2F9E6",
+  "overlay": "#D5F6DB",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#51cf66",
+  "accent_dk": "#37b24d",
+  "accent_lt": "#b2f2bb",
+  "accent_bg": "#DCF5E1",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#C9F4D1",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#51cf66",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#51B9CF",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

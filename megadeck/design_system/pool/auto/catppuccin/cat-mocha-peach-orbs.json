@@ -1,0 +1,47 @@
+{
+  "name": "cat-mocha-peach-orbs",
+  "description": "Catppuccin mocha / peach (orbs).",
+  "bg": "#1e1e2e",
+  "surface": "#28283D",
+  "overlay": "#32324C",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#1e1e2e",
+  "accent": "#fab387",
+  "accent_dk": "#F6843D",
+  "accent_lt": "#FEF1E8",
+  "accent_bg": "#C65008",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#2E2E46",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#fab387",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#CEF987",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

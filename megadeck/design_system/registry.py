@@ -229,22 +229,28 @@ def register_pool_theme_from_dict(d: Dict[str, Any]) -> Theme:
     return t
 
 
-def load_pool_dir(directory: str | Path) -> List[Theme]:
-    """Load every `*.json` under `directory` as a theme. Returns the list
-    of newly-registered themes. Files with parse errors are reported but
-    don't abort the entire load — the rest still register."""
+def load_pool_dir(directory: str | Path, *, recursive: bool = True) -> List[Theme]:
+    """Load every `*.json` under `directory` as a theme.
+
+    With `recursive=True` (default) we walk subdirectories — this lets us
+    organise the pool into `pool/`, `pool/auto/tailwind/`,
+    `pool/auto/catppuccin/`, etc. without losing any themes.
+
+    Files with parse errors are reported but don't abort the entire load.
+    """
     d = Path(directory)
     if not d.is_dir():
         return []
     loaded: List[Theme] = []
-    for path in sorted(d.glob("*.json")):
+    pattern = "**/*.json" if recursive else "*.json"
+    for path in sorted(d.glob(pattern)):
         try:
             theme = load_theme_json(path)
             register_pool_theme(theme)
             loaded.append(theme)
         except Exception as exc:  # noqa: BLE001
             # Don't crash on a single bad file — report and skip.
-            print(f"[megadeck.pool] failed to load {path.name}: {exc}")
+            print(f"[megadeck.pool] failed to load {path.relative_to(d)}: {exc}")
     return loaded
 
 

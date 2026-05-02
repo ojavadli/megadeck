@@ -1,0 +1,47 @@
+{
+  "name": "radix-iris-dark-orbs",
+  "description": "Radix iris (dark, orbs).",
+  "bg": "#13131E",
+  "surface": "#1C1C2D",
+  "overlay": "#26263D",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#13131E",
+  "accent": "#5B5BD6",
+  "accent_dk": "#B1A9FF",
+  "accent_lt": "#202248",
+  "accent_bg": "#191965",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#222236",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#5B5BD6",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#D55AD6",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

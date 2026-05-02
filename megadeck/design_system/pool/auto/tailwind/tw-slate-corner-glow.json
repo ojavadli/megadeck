@@ -1,0 +1,34 @@
+{
+  "name": "tw-slate-corner-glow",
+  "description": "Tailwind slate (corner-glow).",
+  "bg": "#020617",
+  "surface": "#040C2E",
+  "overlay": "#061245",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#020617",
+  "accent": "#64748b",
+  "accent_dk": "#334155",
+  "accent_lt": "#e2e8f0",
+  "accent_bg": "#191D23",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#050F3C",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "decorations": [
+    {
+      "kind": "corner_glow",
+      "corner": "tr",
+      "color": "#64748b",
+      "alpha_pct": 35,
+      "radius_frac": 0.65
+    }
+  ]
+}

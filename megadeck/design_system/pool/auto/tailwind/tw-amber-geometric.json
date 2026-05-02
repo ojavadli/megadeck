@@ -1,0 +1,55 @@
+{
+  "name": "tw-amber-geometric",
+  "description": "Tailwind amber (geometric).",
+  "bg": "#fffbeb",
+  "surface": "#FFF8E0",
+  "overlay": "#FFF5D1",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#f59e0b",
+  "accent_dk": "#b45309",
+  "accent_lt": "#fde68a",
+  "accent_bg": "#FCE2B6",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#FFF2C2",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {
+      "kind": "geometric",
+      "shape": "circle",
+      "x": 0.88,
+      "y": 0.18,
+      "size_in": 1.2,
+      "color": "#f59e0b",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "triangle",
+      "x": 0.06,
+      "y": 0.85,
+      "size_in": 1.4,
+      "color": "#0AF59E",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "square",
+      "x": 0.92,
+      "y": 0.78,
+      "size_in": 0.9,
+      "color": "#9E0AF5",
+      "alpha_pct": 100,
+      "rotation_deg": 12
+    }
+  ]
+}

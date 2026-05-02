@@ -1,0 +1,42 @@
+{
+  "name": "tw-stone-scribble",
+  "description": "Tailwind stone (scribble).",
+  "bg": "#fafaf9",
+  "surface": "#F5F5F3",
+  "overlay": "#EEEEEB",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#78716c",
+  "accent_dk": "#44403c",
+  "accent_lt": "#e7e5e4",
+  "accent_bg": "#CDCAC8",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#E7E7E2",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {
+      "kind": "scribble_dots",
+      "color": "#78716c",
+      "count": 30,
+      "seed": 7,
+      "alpha_pct": 28,
+      "radius_pt": 1.8
+    },
+    {
+      "kind": "edge_ribbon",
+      "edge": "left",
+      "color": "#78716c",
+      "width_in": 0.1,
+      "inset_in": 0.45
+    }
+  ]
+}

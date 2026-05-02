@@ -1,0 +1,47 @@
+{
+  "name": "radix-brown-light-orbs",
+  "description": "Radix brown (light, orbs).",
+  "bg": "#FEFDFC",
+  "surface": "#FBF7F4",
+  "overlay": "#F7F0E8",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#AD7F58",
+  "accent_dk": "#815E46",
+  "accent_lt": "#F0D9C2",
+  "accent_bg": "#E7DACF",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#F3E8DD",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#AD7F58",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#86AD57",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

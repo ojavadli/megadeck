@@ -1,0 +1,55 @@
+{
+  "name": "tw-violet-geometric",
+  "description": "Tailwind violet (geometric).",
+  "bg": "#f5f3ff",
+  "surface": "#ECE8FF",
+  "overlay": "#DFD9FE",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#8b5cf6",
+  "accent_dk": "#6d28d9",
+  "accent_lt": "#ddd6fe",
+  "accent_bg": "#FFFFFE",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#D3CAFF",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {
+      "kind": "geometric",
+      "shape": "circle",
+      "x": 0.88,
+      "y": 0.18,
+      "size_in": 1.2,
+      "color": "#8b5cf6",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "triangle",
+      "x": 0.06,
+      "y": 0.85,
+      "size_in": 1.4,
+      "color": "#F68B5B",
+      "alpha_pct": 100
+    },
+    {
+      "kind": "geometric",
+      "shape": "square",
+      "x": 0.92,
+      "y": 0.78,
+      "size_in": 0.9,
+      "color": "#5BF68B",
+      "alpha_pct": 100,
+      "rotation_deg": 12
+    }
+  ]
+}

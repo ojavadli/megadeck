@@ -1,0 +1,47 @@
+{
+  "name": "radix-lime-light-orbs",
+  "description": "Radix lime (light, orbs).",
+  "bg": "#FCFDFA",
+  "surface": "#F7FAF2",
+  "overlay": "#F1F5E7",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#BDEE63",
+  "accent_dk": "#5C7C2F",
+  "accent_lt": "#DDF0AB",
+  "accent_bg": "#FEFEFF",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#EAF1DC",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#BDEE63",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#62EE94",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

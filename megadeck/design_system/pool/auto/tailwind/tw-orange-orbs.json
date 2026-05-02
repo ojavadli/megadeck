@@ -1,0 +1,47 @@
+{
+  "name": "tw-orange-orbs",
+  "description": "Tailwind orange (orbs).",
+  "bg": "#fff7ed",
+  "surface": "#FFF2E2",
+  "overlay": "#FEEBD3",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#f97316",
+  "accent_dk": "#c2410c",
+  "accent_lt": "#fed7aa",
+  "accent_bg": "#FDDBC4",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#FFE4C4",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#f97316",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#9BF916",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

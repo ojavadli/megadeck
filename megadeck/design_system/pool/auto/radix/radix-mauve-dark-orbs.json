@@ -1,0 +1,47 @@
+{
+  "name": "radix-mauve-dark-orbs",
+  "description": "Radix mauve (dark, orbs).",
+  "bg": "#121113",
+  "surface": "#1E1D20",
+  "overlay": "#2B292D",
+  "title": "#FFFFFF",
+  "body": "#D4D4D8",
+  "muted": "#9CA3AF",
+  "light": "#52525B",
+  "inverse": "#121113",
+  "accent": "#7E7989",
+  "accent_dk": "#B5B2BC",
+  "accent_lt": "#28252D",
+  "accent_bg": "#26252A",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#262428",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#7E7989",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#897983",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}
