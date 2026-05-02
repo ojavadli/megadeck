@@ -1,0 +1,29 @@
+{
+  "name": "blueprint",
+  "description": "Architect's blueprint — deep cyan paper with white type and crosshair geometry.",
+  "bg": "#0E3F5F",
+  "surface": "#0F4C70",
+  "overlay": "#125E89",
+  "title": "#FFFFFF",
+  "body": "#D4ECF6",
+  "muted": "#9BC4D6",
+  "light": "#5C8AA0",
+  "inverse": "#0E3F5F",
+  "accent": "#FFFFFF",
+  "accent_dk": "#D4ECF6",
+  "accent_lt": "#FFFFFF",
+  "accent_bg": "#0F4C70",
+  "success": "#34D399",
+  "warning": "#FCD34D",
+  "danger": "#FB7185",
+  "hairline": "#1B6F9A",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {"kind": "scribble_dots", "color": "#FFFFFF", "count": 80,
+     "seed": 3, "alpha_pct": 14, "radius_pt": 0.9},
+    {"kind": "geometric", "shape": "diamond", "x": 0.92, "y": 0.92,
+     "size_in": 1.0, "color": "#FFFFFF", "alpha_pct": 25}
+  ]
+}

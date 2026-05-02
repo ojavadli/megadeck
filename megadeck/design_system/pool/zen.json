@@ -1,0 +1,27 @@
+{
+  "name": "zen",
+  "description": "Zen — pure rice-paper white with a single watercolour wash circle.",
+  "bg": "#FCFAF5",
+  "surface": "#FFFFFF",
+  "overlay": "#F0EDE3",
+  "title": "#1A1A1A",
+  "body": "#3D3D3D",
+  "muted": "#7A7A7A",
+  "light": "#B5B5B5",
+  "inverse": "#FFFFFF",
+  "accent": "#1A1A1A",
+  "accent_dk": "#000000",
+  "accent_lt": "#7A7A7A",
+  "accent_bg": "#F0EDE3",
+  "success": "#3D7A3F",
+  "warning": "#C68F2C",
+  "danger": "#9C3B34",
+  "hairline": "#E8E3D6",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {"kind": "orb", "x": 0.85, "y": 0.20, "size_in": 4.0,
+     "color": "#9C3B34", "alpha_pct": 12, "soft_edge_pt": 24}
+  ]
+}

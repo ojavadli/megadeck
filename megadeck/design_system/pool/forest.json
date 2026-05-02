@@ -1,0 +1,31 @@
+{
+  "name": "forest",
+  "description": "Deep forest — pine-green canopy with golden corner glow.",
+  "bg": "#0D2818",
+  "surface": "#143922",
+  "overlay": "#1F4F30",
+  "title": "#F2F4E8",
+  "body": "#CDD8C0",
+  "muted": "#94A085",
+  "light": "#5F6B54",
+  "inverse": "#0D2818",
+  "accent": "#FBBF24",
+  "accent_dk": "#D97706",
+  "accent_lt": "#FCD34D",
+  "accent_bg": "#3F2C0E",
+  "success": "#84CC16",
+  "warning": "#FBBF24",
+  "danger": "#EF4444",
+  "hairline": "#1F4F30",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 18,
+  "accent_glow_alpha_pct": 55,
+  "decorations": [
+    {"kind": "corner_glow", "corner": "tl",
+     "color": "#FBBF24", "alpha_pct": 25, "radius_frac": 0.55},
+    {"kind": "scribble_dots", "color": "#84CC16", "count": 30,
+     "seed": 5, "alpha_pct": 20, "radius_pt": 1.2}
+  ]
+}

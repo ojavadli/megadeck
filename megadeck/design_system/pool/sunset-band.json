@@ -1,0 +1,30 @@
+{
+  "name": "sunset-band",
+  "description": "Diagonal sunset band crossing the slide — warm cinematic.",
+  "bg": "#0E0817",
+  "surface": "#1B0F2E",
+  "overlay": "#2A1845",
+  "title": "#FFFFFF",
+  "body": "#F0E6FF",
+  "muted": "#C5B3D9",
+  "light": "#7A6E91",
+  "inverse": "#0E0817",
+  "accent": "#FB923C",
+  "accent_dk": "#EA580C",
+  "accent_lt": "#FDBA74",
+  "accent_bg": "#3D1F0E",
+  "success": "#34D399",
+  "warning": "#FBBF24",
+  "danger": "#F87171",
+  "hairline": "#2A1845",
+  "bg_style": "solid",
+  "card_style": "glass",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 18,
+  "accent_glow_alpha_pct": 55,
+  "decorations": [
+    {"kind": "aurora_band",
+     "colors": ["#FB923C", "#BE185D", "#1E1B4B"],
+     "angle_deg": 18, "band_height_in": 4.5, "y_frac": 0.42}
+  ]
+}

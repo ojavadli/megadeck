@@ -1,0 +1,31 @@
+{
+  "name": "molten",
+  "description": "Volcanic glow — molten orange orbs blooming through pure black.",
+  "bg": "#06070A",
+  "surface": "#11151B",
+  "overlay": "#1B202A",
+  "title": "#FFFFFF",
+  "body": "#E5DCC8",
+  "muted": "#9C9385",
+  "light": "#5C5448",
+  "inverse": "#06070A",
+  "accent": "#F97316",
+  "accent_dk": "#C2410C",
+  "accent_lt": "#FDBA74",
+  "accent_bg": "#3D1F0E",
+  "success": "#34D399",
+  "warning": "#FBBF24",
+  "danger": "#F87171",
+  "hairline": "#1B202A",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 26,
+  "accent_glow_alpha_pct": 75,
+  "decorations": [
+    {"kind": "orb", "x": 0.95, "y": 0.06, "size_in": 6.0,
+     "color": "#F97316", "alpha_pct": 75, "soft_edge_pt": 32},
+    {"kind": "orb", "x": -0.05, "y": 1.05, "size_in": 6.5,
+     "color": "#DC2626", "alpha_pct": 60, "soft_edge_pt": 30}
+  ]
+}

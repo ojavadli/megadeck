@@ -21,6 +21,7 @@ from megadeck.core.renderer import render_deck
 from megadeck.core.selfheal import render_with_selfheal
 from megadeck.design_system.registry import (
     default_pool_dir,
+    install_theme_url,
     list_pool_themes,
     load_theme_json,
     register_pool_theme,
@@ -294,9 +295,17 @@ def pool_list_command() -> None:
 
 @pool_app.command("install")
 def pool_install_command(
-    json_path: Path = typer.Argument(..., help="Path to a theme .json to install."),
+    source: str = typer.Argument(
+        ...,
+        help="Path to a theme .json (local) or HTTPS URL (e.g. github raw / gist).",
+    ),
 ) -> None:
-    """Install a theme from a local JSON file into the pool directory."""
+    """Install a theme from a local JSON file or a remote URL into the pool."""
+    if source.startswith(("http://", "https://")):
+        theme = install_theme_url(source)
+        console.print(f"[green]✓[/green] Fetched + installed [bold]{theme.name}[/bold] from {source}")
+        return
+    json_path = Path(source)
     if not json_path.exists():
         console.print(f"[red]No such file:[/red] {json_path}")
         raise typer.Exit(1)

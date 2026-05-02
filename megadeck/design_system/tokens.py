@@ -8,7 +8,7 @@ visual capabilities of `python-pptx`.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
 from pptx.dml.color import RGBColor
 
@@ -100,6 +100,11 @@ class Theme:
     accent_glow: bool = False         # add outer glow to numerals + accents
     accent_glow_radius_pt: float = 22.0
     accent_glow_alpha_pct: int = 60
+    # Decorations — list of decoration dicts (parsed lazily via decorations.py).
+    # Each entry has a `kind` ("orb"/"mesh"/"corner_glow"/"edge_ribbon"/etc.)
+    # and shape-specific fields. Defined as `field(default_factory=list)` to
+    # keep the dataclass frozen & hashable.
+    decorations: Tuple[Dict[str, Any], ...] = field(default_factory=tuple)
 
     @property
     def content_width_in(self) -> float:

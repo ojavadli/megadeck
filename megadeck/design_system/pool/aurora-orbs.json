@@ -1,0 +1,33 @@
+{
+  "name": "aurora-orbs",
+  "description": "Twin gradient orbs floating off-canvas — soft cinematic depth.",
+  "bg": "#06081A",
+  "surface": "#0F1226",
+  "overlay": "#1B1F38",
+  "title": "#FFFFFF",
+  "body": "#D4D9E8",
+  "muted": "#9CA3B6",
+  "light": "#5C6276",
+  "inverse": "#06081A",
+  "accent": "#A78BFA",
+  "accent_dk": "#7C3AED",
+  "accent_lt": "#DDD6FE",
+  "accent_bg": "#1E1B4B",
+  "success": "#34D399",
+  "warning": "#FBBF24",
+  "danger": "#F87171",
+  "hairline": "#1B1F38",
+  "bg_style": "solid",
+  "card_style": "glass",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {"kind": "orb", "x": 0.10, "y": 0.20, "size_in": 7.0,
+     "color": "#7C3AED", "alpha_pct": 55, "soft_edge_pt": 30},
+    {"kind": "orb", "x": 0.85, "y": 0.78, "size_in": 6.0,
+     "color": "#22D3EE", "alpha_pct": 45, "soft_edge_pt": 28},
+    {"kind": "scribble_dots", "color": "#A78BFA", "count": 18, "seed": 7,
+     "alpha_pct": 22, "radius_pt": 1.8}
+  ]
+}

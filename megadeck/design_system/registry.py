@@ -128,6 +128,23 @@ def theme_from_dict(d: Dict[str, Any]) -> Theme:
     type_scale = TypeScale(**d.get("type_scale", {})) if "type_scale" in d else TypeScale()
     spacing = Spacing(**d.get("spacing", {})) if "spacing" in d else Spacing()
 
+    # Decorations: list of dicts. Validate each one through the decoration
+    # parser so a typo'd spec is caught at load-time.
+    decoration_specs = d.get("decorations") or []
+    decorations: List[Dict[str, Any]] = []
+    if decoration_specs:
+        try:
+            from megadeck.design_system.decorations import parse_decoration
+        except Exception:
+            parse_decoration = None  # type: ignore[assignment]
+        for spec in decoration_specs:
+            if parse_decoration is not None:
+                try:
+                    parse_decoration(spec)  # validate; ignore returned model
+                except Exception as exc:
+                    raise ValueError(f"Invalid decoration on theme {d['name']!r}: {exc}")
+            decorations.append(dict(spec))
+
     return Theme(
         name=d["name"],
         description=d.get("description", ""),
@@ -166,12 +183,40 @@ def theme_from_dict(d: Dict[str, Any]) -> Theme:
         accent_glow=d.get("accent_glow", False),
         accent_glow_radius_pt=d.get("accent_glow_radius_pt", 22.0),
         accent_glow_alpha_pct=d.get("accent_glow_alpha_pct", 60),
+        decorations=tuple(decorations),
     )
 
 
 def load_theme_json(path: str | Path) -> Theme:
     p = Path(path)
     return theme_from_dict(json.loads(p.read_text(encoding="utf-8")))
+
+
+def load_theme_url(url: str, *, timeout: float = 10.0) -> Theme:
+    """Download and parse a theme JSON from a URL.
+
+    Supports GitHub raw URLs, gists, and any plain HTTPS endpoint that
+    responds with a JSON body matching the Theme schema. Use for letting
+    the community / MCP feed designs into the pool at runtime.
+    """
+    import urllib.request
+    with urllib.request.urlopen(url, timeout=timeout) as resp:
+        if resp.status != 200:
+            raise RuntimeError(f"GET {url} returned {resp.status}")
+        body = resp.read().decode("utf-8")
+    return theme_from_dict(json.loads(body))
+
+
+def install_theme_url(url: str, *, pool_dir: Optional[Path] = None) -> Theme:
+    """Download a theme.json from `url`, save it under the pool directory,
+    and register it. Returns the registered Theme."""
+    target_dir = Path(pool_dir) if pool_dir else default_pool_dir()
+    target_dir.mkdir(parents=True, exist_ok=True)
+    theme = load_theme_url(url)
+    register_pool_theme(theme)
+    target = target_dir / f"{theme.name}.json"
+    target.write_text(json.dumps(theme_to_dict(theme), indent=2), encoding="utf-8")
+    return theme
 
 
 def register_pool_theme(theme: Theme) -> None:
@@ -257,4 +302,6 @@ def theme_to_dict(theme: Theme) -> Dict[str, Any]:
         "accent_glow_radius_pt": theme.accent_glow_radius_pt,
         "accent_glow_alpha_pct": theme.accent_glow_alpha_pct,
     }
+    if getattr(theme, "decorations", None):
+        out["decorations"] = [dict(d) for d in theme.decorations]
     return {k: v for k, v in out.items() if v is not None}

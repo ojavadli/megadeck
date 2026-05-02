@@ -1,0 +1,31 @@
+{
+  "name": "paper-stripe",
+  "description": "Editorial cream paper with a vertical accent ribbon on the left — magazine layout.",
+  "bg": "#FAF6EE",
+  "surface": "#FFFFFF",
+  "overlay": "#EFE8D6",
+  "title": "#1B1A18",
+  "body": "#3F3C36",
+  "muted": "#76716A",
+  "light": "#A39E94",
+  "inverse": "#FFFFFF",
+  "accent": "#1F2937",
+  "accent_dk": "#0F172A",
+  "accent_lt": "#9CA3AF",
+  "accent_bg": "#E5E7EB",
+  "success": "#638B68",
+  "warning": "#C68F2C",
+  "danger": "#9C3B34",
+  "hairline": "#E0DAC8",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "font_display": "Georgia",
+  "font_body": "Georgia",
+  "decorations": [
+    {"kind": "edge_ribbon", "edge": "left",
+     "color": "#1F2937", "width_in": 0.20, "inset_in": 0.0},
+    {"kind": "scribble_dots", "color": "#76716A", "count": 30,
+     "seed": 4, "alpha_pct": 18, "radius_pt": 1.4}
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "name": "sakura",
+  "description": "Cherry blossom — soft pink wash with petal scatter and a vertical accent.",
+  "bg": "#FDF5F8",
+  "surface": "#FFFFFF",
+  "overlay": "#FAE0EA",
+  "title": "#1A1A1A",
+  "body": "#3D3845",
+  "muted": "#766B7A",
+  "light": "#A698B0",
+  "inverse": "#FFFFFF",
+  "accent": "#EC4899",
+  "accent_dk": "#BE185D",
+  "accent_lt": "#F9A8D4",
+  "accent_bg": "#FCE7F3",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#E11D48",
+  "hairline": "#F5D2DE",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": false,
+  "decorations": [
+    {"kind": "orb", "x": 0.15, "y": 0.15, "size_in": 4.0,
+     "color": "#F9A8D4", "alpha_pct": 30, "soft_edge_pt": 28},
+    {"kind": "scribble_dots", "color": "#EC4899", "count": 30,
+     "seed": 9, "alpha_pct": 35, "radius_pt": 2.0},
+    {"kind": "edge_ribbon", "edge": "left",
+     "color": "#EC4899", "width_in": 0.10, "inset_in": 0.45}
+  ]
+}

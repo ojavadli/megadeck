@@ -1,0 +1,29 @@
+{
+  "name": "grid-paper",
+  "description": "Engineering grid paper — dotted matrix with single accent stroke.",
+  "bg": "#FAFAF7",
+  "surface": "#FFFFFF",
+  "overlay": "#F0EFE8",
+  "title": "#0F172A",
+  "body": "#334155",
+  "muted": "#64748B",
+  "light": "#94A3B8",
+  "inverse": "#FFFFFF",
+  "accent": "#0F172A",
+  "accent_dk": "#020617",
+  "accent_lt": "#475569",
+  "accent_bg": "#E2E8F0",
+  "success": "#16A34A",
+  "warning": "#D97706",
+  "danger": "#DC2626",
+  "hairline": "#E5E5DD",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "font_display": "JetBrains Mono",
+  "font_body": "JetBrains Mono",
+  "decorations": [
+    {"kind": "scribble_dots", "color": "#94A3B8", "count": 110,
+     "seed": 2, "alpha_pct": 22, "radius_pt": 0.7}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "dieter-rams",
+  "description": "Dieter Rams / Braun — pale grey panel with single orange edge accent. Industrial.",
+  "bg": "#F1F1F0",
+  "surface": "#FFFFFF",
+  "overlay": "#E1E1E0",
+  "title": "#1A1A1A",
+  "body": "#3D3D3D",
+  "muted": "#7A7A7A",
+  "light": "#B5B5B5",
+  "inverse": "#FFFFFF",
+  "accent": "#FF5E14",
+  "accent_dk": "#C2440C",
+  "accent_lt": "#FFA070",
+  "accent_bg": "#FFE8DC",
+  "success": "#3D7A3F",
+  "warning": "#E5A00D",
+  "danger": "#C8302D",
+  "hairline": "#D5D5D4",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {"kind": "edge_ribbon", "edge": "top",
+     "color": "#FF5E14", "width_in": 0.06, "inset_in": 0.0}
+  ]
+}

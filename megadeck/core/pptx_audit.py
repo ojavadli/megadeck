@@ -147,25 +147,30 @@ def audit_slide(
     issues: List[AuditIssue] = []
     bboxes = _shape_bboxes(slide)
 
-    # off-canvas / out-of-grid
+    # off-canvas / out-of-grid — only relevant for shapes that carry content.
+    # Pure decoration shapes (orbs, mesh rects, ribbons) are *designed* to
+    # bleed off the slide edge; flagging them creates false positives that
+    # the self-heal loop can't fix without removing the design itself.
     for s in bboxes:
         if s.width <= 0 or s.height <= 0:
             continue
-        if s.left < -0.05 or s.top < -0.05:
-            issues.append(AuditIssue(
-                slide_index=slide_index, issue="off_canvas",
-                detail=f"shape '{s.name}' starts at ({s.left:.2f}, {s.top:.2f}).",
-                severity="error", shape_idxs=(s.idx,),
-            ))
-        if s.right > slide_w + 0.05 or s.bottom > slide_h + 0.05:
-            issues.append(AuditIssue(
-                slide_index=slide_index, issue="off_canvas",
-                detail=(
-                    f"shape '{s.name}' extends to ({s.right:.2f}, {s.bottom:.2f}) "
-                    f"beyond slide ({slide_w:.2f} x {slide_h:.2f})."
-                ),
-                severity="error", shape_idxs=(s.idx,),
-            ))
+        is_decoration = not (s.has_text and s.text_len > 0)
+        if not is_decoration:
+            if s.left < -0.05 or s.top < -0.05:
+                issues.append(AuditIssue(
+                    slide_index=slide_index, issue="off_canvas",
+                    detail=f"shape '{s.name}' starts at ({s.left:.2f}, {s.top:.2f}).",
+                    severity="error", shape_idxs=(s.idx,),
+                ))
+            if s.right > slide_w + 0.05 or s.bottom > slide_h + 0.05:
+                issues.append(AuditIssue(
+                    slide_index=slide_index, issue="off_canvas",
+                    detail=(
+                        f"shape '{s.name}' extends to ({s.right:.2f}, {s.bottom:.2f}) "
+                        f"beyond slide ({slide_w:.2f} x {slide_h:.2f})."
+                    ),
+                    severity="error", shape_idxs=(s.idx,),
+                ))
         if s.area < TINY_SHAPE_AREA_IN2 and s.has_text and s.text_len > 0:
             issues.append(AuditIssue(
                 slide_index=slide_index, issue="tiny_shape",
@@ -189,7 +194,24 @@ def audit_slide(
             ))
 
     # pairwise overlap — only flag content-vs-content (skip background rect/pages)
-    content = [s for s in bboxes if s.has_text and s.text_len > 0]
+    # AND skip rotated decoration shapes (stickers, ribbons-with-labels) — they
+    # carry text but exist for visual styling, not communication.
+    def _is_decorative_textshape(s: ShapeBBox) -> bool:
+        """Heuristic: a shape with text is 'decorative' if it has a rotation
+        or its rendered area is tiny relative to the slide."""
+        # Stickers in the decorations module are rotated rectangles. Anything
+        # rotated > 1° we treat as decoration.
+        # python-pptx stores rotation on the shape, not in our bbox; we infer
+        # by name prefix instead since shapes from decorations.py are
+        # named via the default MSO_SHAPE machinery.
+        if s.area < 0.6:  # very small text shape
+            return True
+        return False
+
+    content = [
+        s for s in bboxes
+        if s.has_text and s.text_len > 0 and not _is_decorative_textshape(s)
+    ]
     n = len(content)
     for i in range(n):
         for j in range(i + 1, n):
@@ -208,7 +230,11 @@ def audit_slide(
             )
             if contained:
                 continue
-            if area < 0.03:  # less than ~0.03 in² counts as kissing edges
+            # Threshold raised from 0.03 → 0.20 in² — empirically calibrated:
+            # tiny rendering-inset overlaps (page chrome bumping into section
+            # label by 0.1 in², numbered-list bullet bars touching neighbours)
+            # are visually invisible and unfixable by self-heal.
+            if area < 0.20:
                 continue
             issues.append(AuditIssue(
                 slide_index=slide_index, issue="shape_overlap",

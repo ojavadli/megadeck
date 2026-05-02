@@ -1,0 +1,29 @@
+{
+  "name": "mint-corner",
+  "description": "Black canvas with a single radial mint corner glow — minimalist v0 vibe.",
+  "bg": "#0A0A0A",
+  "surface": "#141414",
+  "overlay": "#1F1F1F",
+  "title": "#FAFAFA",
+  "body": "#C9CFD3",
+  "muted": "#8B9098",
+  "light": "#52575C",
+  "inverse": "#0A0A0A",
+  "accent": "#10F0A1",
+  "accent_dk": "#059669",
+  "accent_lt": "#6EF1B5",
+  "accent_bg": "#0A2E1F",
+  "success": "#10F0A1",
+  "warning": "#FBBF24",
+  "danger": "#F87171",
+  "hairline": "#1F1F1F",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 18,
+  "accent_glow_alpha_pct": 60,
+  "decorations": [
+    {"kind": "corner_glow", "corner": "tr",
+     "color": "#10F0A1", "alpha_pct": 35, "radius_frac": 0.65}
+  ]
+}

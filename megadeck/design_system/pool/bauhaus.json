@@ -1,0 +1,32 @@
+{
+  "name": "bauhaus",
+  "description": "Bauhaus geometry — primary colour blocks (red/yellow/blue) on cream.",
+  "bg": "#F2EFE3",
+  "surface": "#FFFFFF",
+  "overlay": "#E5DFC8",
+  "title": "#000000",
+  "body": "#1A1A1A",
+  "muted": "#5A5A5A",
+  "light": "#A0A0A0",
+  "inverse": "#FFFFFF",
+  "accent": "#E51F1F",
+  "accent_dk": "#A91515",
+  "accent_lt": "#F58A8A",
+  "accent_bg": "#FCE5E5",
+  "success": "#0D4F2D",
+  "warning": "#F4C20D",
+  "danger": "#E51F1F",
+  "hairline": "#D6CFB7",
+  "bg_style": "solid",
+  "card_style": "flat",
+  "accent_glow": false,
+  "decorations": [
+    {"kind": "geometric", "shape": "circle", "x": 0.86, "y": 0.18,
+     "size_in": 1.4, "color": "#F4C20D", "alpha_pct": 100},
+    {"kind": "geometric", "shape": "square", "x": 0.92, "y": 0.78,
+     "size_in": 1.0, "color": "#1853A2", "alpha_pct": 100,
+     "rotation_deg": 12},
+    {"kind": "geometric", "shape": "triangle", "x": 0.06, "y": 0.85,
+     "size_in": 1.6, "color": "#E51F1F", "alpha_pct": 100}
+  ]
+}

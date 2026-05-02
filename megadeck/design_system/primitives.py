@@ -69,44 +69,56 @@ def set_slide_bg(slide: Slide, color: RGBColor, theme: Theme | None = None) -> N
     rectangle behind everything else and apply a real DrawingML gradient fill.
     The slide's own background stays solid as a fallback for renderers that
     don't support gradients in shape fills (rare).
+
+    Then — regardless of bg style — we layer any `theme.decorations` so orbs
+    and ribbons land BEFORE the content. This is what gives a theme like
+    Bauhaus or Memphis its visual identity.
     """
     bg = slide.background
     bg.fill.solid()
     bg.fill.fore_color.rgb = color
-    if theme is None or theme.bg_style == "solid":
-        return
-    # Gradient backgrounds — full-bleed rectangle as the *first* shape.
-    from pptx.enum.shapes import MSO_SHAPE
-    from pptx.util import Emu
-    from megadeck.design_system.effects import (
-        aurora_background, apply_linear_gradient, apply_radial_gradient,
-    )
-    rect = slide.shapes.add_shape(
-        MSO_SHAPE.RECTANGLE,
-        0, 0,
-        Emu(int(theme.slide_width_in * 914400)),
-        Emu(int(theme.slide_height_in * 914400)),
-    )
-    rect.line.fill.background()
-    a = theme.bg_aurora_a or theme.bg
-    b = theme.bg_aurora_b or theme.bg
-    c = theme.bg_aurora_c or theme.bg
-    if theme.bg_style == "aurora":
-        aurora_background(rect, a=a, b=b, c=c)
-    elif theme.bg_style == "vercel-glow":
-        # Subtle radial glow centered top — Vercel marketing pages signature.
-        apply_radial_gradient(
-            rect,
-            inner_color=b, outer_color=a,
-            inner_alpha=80, outer_alpha=100,
-            focus_x=50, focus_y=15,
+
+    if theme is not None and theme.bg_style != "solid":
+        from pptx.enum.shapes import MSO_SHAPE
+        from pptx.util import Emu
+        from megadeck.design_system.effects import (
+            aurora_background, apply_linear_gradient, apply_radial_gradient,
         )
-    elif theme.bg_style == "linear-mesh":
-        apply_linear_gradient(
-            rect,
-            stops=[(0, a, 100), (60, b, 100), (100, c, 100)],
-            angle_deg=160.0,
+        rect = slide.shapes.add_shape(
+            MSO_SHAPE.RECTANGLE,
+            0, 0,
+            Emu(int(theme.slide_width_in * 914400)),
+            Emu(int(theme.slide_height_in * 914400)),
         )
+        rect.line.fill.background()
+        a = theme.bg_aurora_a or theme.bg
+        b = theme.bg_aurora_b or theme.bg
+        c = theme.bg_aurora_c or theme.bg
+        if theme.bg_style == "aurora":
+            aurora_background(rect, a=a, b=b, c=c)
+        elif theme.bg_style == "vercel-glow":
+            apply_radial_gradient(
+                rect,
+                inner_color=b, outer_color=a,
+                inner_alpha=80, outer_alpha=100,
+                focus_x=50, focus_y=15,
+            )
+        elif theme.bg_style == "linear-mesh":
+            apply_linear_gradient(
+                rect,
+                stops=[(0, a, 100), (60, b, 100), (100, c, 100)],
+                angle_deg=160.0,
+            )
+
+    # Decorations (orbs, mesh, ribbons, geometric, scribble dots…) layer
+    # on every theme — including solid-bg ones. This is the difference
+    # between a theme and a *design*.
+    if theme is not None:
+        try:
+            from megadeck.design_system.decorations import apply_decorations
+            apply_decorations(slide, theme)
+        except Exception:
+            pass
 
 
 # ----- Text --------------------------------------------------------------------
