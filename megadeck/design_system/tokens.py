@@ -278,6 +278,114 @@ PRINT_THEME = Theme(
 )
 
 
+VIBRANT_THEME = Theme(
+    name="vibrant",
+    description="High-energy colour palette — magenta accent on white, designed for product launches.",
+    bg=_rgb("FFFFFF"),
+    surface=_rgb("FDF4FF"),
+    overlay=_rgb("F5D0FE"),
+    title=_rgb("0A0A0A"),
+    body=_rgb("475569"),
+    muted=_rgb("64748B"),
+    light=_rgb("CBD5E1"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("D946EF"),         # fuchsia-500
+    accent_dk=_rgb("A21CAF"),
+    accent_lt=_rgb("F0ABFC"),
+    accent_bg=_rgb("FDF4FF"),
+    success=_rgb("10B981"),
+    warning=_rgb("F59E0B"),
+    danger=_rgb("EF4444"),
+    hairline=_rgb("E2E8F0"),
+)
+
+MONOCHROME_THEME = Theme(
+    name="monochrome",
+    description="Pure black + white. Zero colour. Brutally minimal.",
+    bg=_rgb("FFFFFF"),
+    surface=_rgb("F4F4F4"),
+    overlay=_rgb("E5E5E5"),
+    title=_rgb("000000"),
+    body=_rgb("262626"),
+    muted=_rgb("737373"),
+    light=_rgb("A3A3A3"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("000000"),
+    accent_dk=_rgb("000000"),
+    accent_lt=_rgb("D4D4D4"),
+    accent_bg=_rgb("F4F4F4"),
+    success=_rgb("171717"),
+    warning=_rgb("404040"),
+    danger=_rgb("000000"),
+    hairline=_rgb("D4D4D4"),
+)
+
+SWISS_THEME = Theme(
+    name="swiss",
+    description="Swiss design school: strict grid, red accent, Helvetica feel.",
+    bg=_rgb("FFFFFF"),
+    surface=_rgb("F8F8F8"),
+    overlay=_rgb("EDEDED"),
+    title=_rgb("000000"),
+    body=_rgb("1A1A1A"),
+    muted=_rgb("707070"),
+    light=_rgb("BABABA"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("E2231A"),         # Swiss-red
+    accent_dk=_rgb("9E1814"),
+    accent_lt=_rgb("FECACA"),
+    accent_bg=_rgb("FEF2F2"),
+    success=_rgb("000000"),
+    warning=_rgb("E2231A"),
+    danger=_rgb("E2231A"),
+    hairline=_rgb("E0E0E0"),
+    font_display="Helvetica Neue",
+    font_body="Helvetica Neue",
+)
+
+JAPANDI_THEME = Theme(
+    name="japandi",
+    description="Japanese-Scandinavian. Soft beige, muted earth tones. Calm and warm.",
+    bg=_rgb("F5EFE6"),
+    surface=_rgb("EFE7D8"),
+    overlay=_rgb("E5DAC4"),
+    title=_rgb("2C2419"),
+    body=_rgb("4F4434"),
+    muted=_rgb("8B7E69"),
+    light=_rgb("BAB099"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("8E5A2D"),         # warm tobacco
+    accent_dk=_rgb("5C3A1E"),
+    accent_lt=_rgb("D4B894"),
+    accent_bg=_rgb("EBDFC8"),
+    success=_rgb("4A6B3F"),
+    warning=_rgb("B8762F"),
+    danger=_rgb("8B3A2A"),
+    hairline=_rgb("D6CDB8"),
+)
+
+GLASS_THEME = Theme(
+    name="glass",
+    description="Frosted-glass aesthetic — soft tinted backgrounds, gentle blue accent.",
+    bg=_rgb("EAF2FB"),
+    surface=_rgb("F7FAFD"),
+    overlay=_rgb("D8E5F4"),
+    title=_rgb("0F1A2C"),
+    body=_rgb("394A66"),
+    muted=_rgb("6F7E94"),
+    light=_rgb("AFB8C8"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("3B82F6"),
+    accent_dk=_rgb("1D4ED8"),
+    accent_lt=_rgb("BFDBFE"),
+    accent_bg=_rgb("DBEAFE"),
+    success=_rgb("0EA47A"),
+    warning=_rgb("F59E0B"),
+    danger=_rgb("E11D48"),
+    hairline=_rgb("CBDCEC"),
+)
+
+
 _THEMES: Dict[str, Theme] = {
     "default": DEFAULT_THEME,
     "dark": DARK_THEME,
@@ -287,6 +395,11 @@ _THEMES: Dict[str, Theme] = {
     "pastel": PASTEL_THEME,
     "neon": NEON_THEME,
     "print": PRINT_THEME,
+    "vibrant": VIBRANT_THEME,
+    "monochrome": MONOCHROME_THEME,
+    "swiss": SWISS_THEME,
+    "japandi": JAPANDI_THEME,
+    "glass": GLASS_THEME,
 }
 
 

@@ -256,6 +256,140 @@ class TitleSlide(_SlideBase):
     venue: Optional[str] = Field(None, max_length=80)
 
 
+class FeatureItem(BaseModel):
+    icon_text: str = Field("", max_length=4, description="Single emoji or 1-2 char icon.")
+    title: str = Field(..., max_length=40)
+    description: str = Field("", max_length=120)
+
+
+class FeatureGridSlide(_SlideBase):
+    """3-6 features in a grid with icon + title + description."""
+    kind: Literal["feature_grid"] = "feature_grid"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=140)
+    features: List[FeatureItem] = Field(..., min_length=3, max_length=6)
+
+
+class TestimonialItem(BaseModel):
+    quote: str = Field(..., max_length=180)
+    author: str = Field(..., max_length=60)
+    role: str = Field("", max_length=60)
+
+
+class TestimonialGridSlide(_SlideBase):
+    """2-3 customer quotes side by side."""
+    kind: Literal["testimonial_grid"] = "testimonial_grid"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    items: List[TestimonialItem] = Field(..., min_length=2, max_length=3)
+
+
+class TeamMember2(BaseModel):
+    initials: str = Field(..., max_length=4, description="Initials in lieu of a photo.")
+    name: str = Field(..., max_length=40)
+    role: str = Field(..., max_length=60)
+
+
+class TeamGridSlide(_SlideBase):
+    """3-6 team members with initials, name, role."""
+    kind: Literal["team_grid"] = "team_grid"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    members: List[TeamMember2] = Field(..., min_length=3, max_length=6)
+
+
+class PricingTierData(BaseModel):
+    name: str = Field(..., max_length=20)
+    price: str = Field(..., max_length=14, description="e.g. '$49 / mo'.")
+    tagline: str = Field("", max_length=50)
+    features: List[str] = Field(..., min_length=1, max_length=6)
+    is_featured: bool = Field(False)
+
+
+class PricingTableSlide(_SlideBase):
+    """3 pricing tiers side by side, optional featured tier highlighted."""
+    kind: Literal["pricing_table"] = "pricing_table"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=140)
+    tiers: List[PricingTierData] = Field(..., min_length=2, max_length=3)
+
+
+class TakeawaysSlide(_SlideBase):
+    """Numbered key takeaways with chevron — closing-style summary."""
+    kind: Literal["takeaways"] = "takeaways"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    items: List[BulletItem] = Field(..., min_length=2, max_length=5)
+
+
+class CallToActionSlide(_SlideBase):
+    """Big CTA slide — title + subtitle + button-styled URL + footer."""
+    kind: Literal["call_to_action"] = "call_to_action"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=180)
+    button_text: str = Field(..., max_length=40)
+    url: Optional[str] = Field(None, max_length=80)
+    footer: Optional[str] = Field(None, max_length=120)
+
+
+class SwotMatrixSlide(_SlideBase):
+    """Classic 2x2 SWOT (Strengths, Weaknesses, Opportunities, Threats)."""
+    kind: Literal["swot_matrix"] = "swot_matrix"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    strengths: List[str] = Field(..., min_length=1, max_length=5)
+    weaknesses: List[str] = Field(..., min_length=1, max_length=5)
+    opportunities: List[str] = Field(..., min_length=1, max_length=5)
+    threats: List[str] = Field(..., min_length=1, max_length=5)
+
+
+class FaqItem(BaseModel):
+    question: str = Field(..., max_length=80)
+    answer: str = Field(..., max_length=180)
+
+
+class FaqListSlide(_SlideBase):
+    """3-5 FAQs with bold question + answer."""
+    kind: Literal["faq_list"] = "faq_list"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    items: List[FaqItem] = Field(..., min_length=3, max_length=5)
+
+
+class StatHero(BaseModel):
+    value: str = Field(..., max_length=14)
+    label: str = Field(..., max_length=40)
+
+
+class StatHeroSlide(_SlideBase):
+    """One massive number/stat as the hero with supporting context."""
+    kind: Literal["stat_hero"] = "stat_hero"
+    eyebrow: str = Field(..., max_length=40)
+    stat: StatHero
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=180)
+
+
+class LogoGridSlide(_SlideBase):
+    """Grid of customer/partner logo names (text since pptx logo storage varies)."""
+    kind: Literal["logo_grid"] = "logo_grid"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=140)
+    logos: List[str] = Field(..., min_length=4, max_length=12)
+
+
+class QuestionSlide(_SlideBase):
+    """Question-mark slide for 'Q&A' / 'questions?' pause moments."""
+    kind: Literal["question"] = "question"
+    title: str = Field("Questions?", max_length=80)
+    subtitle: Optional[str] = Field(None, max_length=180)
+    contact: Optional[str] = Field(None, max_length=80)
+
+
 # Discriminated union — the renderer dispatches on `kind`.
 Slide = Annotated[
     Union[
@@ -274,6 +408,17 @@ Slide = Annotated[
         StepDiagramSlide,
         CodeSnippetSlide,
         TitleSlide,
+        FeatureGridSlide,
+        TestimonialGridSlide,
+        TeamGridSlide,
+        PricingTableSlide,
+        TakeawaysSlide,
+        CallToActionSlide,
+        SwotMatrixSlide,
+        FaqListSlide,
+        StatHeroSlide,
+        LogoGridSlide,
+        QuestionSlide,
     ],
     Field(discriminator="kind"),
 ]

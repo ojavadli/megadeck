@@ -47,6 +47,17 @@ Available slide kinds:
 - before_after         — Before/after split with optional verdict
 - step_diagram         — 3-5 sequential steps with arrows
 - code_snippet         — Code block with language + caption
+- feature_grid         — 3-6 features with icon + title + description
+- testimonial_grid     — 2-3 customer quotes side by side
+- team_grid            — 3-6 team members with initials + name + role
+- pricing_table        — 2-3 pricing tiers, optional featured highlight
+- takeaways            — 2-5 numbered key takeaways with circles
+- call_to_action       — Hero title + button-styled URL + footer
+- swot_matrix          — Classic 2x2 SWOT
+- faq_list             — 3-5 FAQs (question + answer)
+- stat_hero            — One massive stat number + supporting context
+- logo_grid            — Customer / partner logo names in a grid
+- question             — Q&A pause slide with big "?" mark
 
 Hard constraints:
 - Every bullet head ≤ 80 chars. Every bullet tail ≤ 240 chars.
