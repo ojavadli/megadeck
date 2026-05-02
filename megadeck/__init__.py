@@ -18,4 +18,14 @@ except Exception as _exc:  # noqa: BLE001
     import warnings
     warnings.warn(f"megadeck pool sync failed: {_exc}")
 
+# Auto-load every ingested layout JSON shipped under
+# `megadeck/design_system/layouts/lib/`. These are real human-designed
+# slide layouts harvested from .pptx files via `megadeck layouts ingest`.
+try:
+    from megadeck.design_system.layouts.registry import sync_default_layout_lib
+    sync_default_layout_lib()
+except Exception as _exc:  # noqa: BLE001
+    import warnings
+    warnings.warn(f"megadeck layout-lib sync failed: {_exc}")
+
 __version__ = "0.2.0"

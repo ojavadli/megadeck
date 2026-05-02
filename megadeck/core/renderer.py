@@ -11,21 +11,25 @@ from pptx.util import Emu, Inches
 from megadeck.animations.transitions import apply_transition
 from megadeck.core.schemas import (
     AgendaSlide,
+    BarChartSlide,
     BeforeAfterSlide,
     BentoGridSlide,
     CallToActionSlide,
     CodeSnippetSlide,
     ComparisonTableSlide,
     Deck,
+    DonutChartSlide,
     EditorialSplitSlide,
     FaqListSlide,
     FeatureGridSlide,
     HeroMinimalSlide,
     HeroStatementSlide,
+    IconGridSlide,
     KpiGridSlide,
     LogoGridSlide,
     ManifestoSlide,
     NumberedListSlide,
+    PhotoCardSlide,
     PricingTableSlide,
     PullQuoteSlide,
     QuestionSlide,
@@ -46,20 +50,24 @@ from megadeck.core.schemas import (
 )
 from megadeck.design_system.templates import (
     render_agenda,
+    render_bar_chart,
     render_before_after,
     render_bento_grid,
     render_call_to_action,
     render_code_snippet,
     render_comparison_table,
+    render_donut_chart,
     render_editorial_split,
     render_faq_list,
     render_feature_grid,
     render_hero_minimal,
     render_hero_statement,
+    render_icon_grid,
     render_kpi_grid,
     render_logo_grid,
     render_manifesto,
     render_numbered_list,
+    render_photo_card,
     render_pricing_table,
     render_pull_quote,
     render_question,
@@ -114,6 +122,10 @@ _RENDERERS = {
     ManifestoSlide: render_manifesto,
     QuoteDecorativeSlide: render_quote_decorative,
     SectionHeroSlide: render_section_hero,
+    IconGridSlide: render_icon_grid,
+    BarChartSlide: render_bar_chart,
+    DonutChartSlide: render_donut_chart,
+    PhotoCardSlide: render_photo_card,
 }
 
 
@@ -195,6 +207,33 @@ def render_deck(deck: Deck, output_path: str | Path) -> Path:
         slide = prs.slides.add_slide(blank_layout)
         page_n = idx + 1
         section_label = _section_label_for(deck, idx)
+
+        # Stamp per-slide composition (if any) onto the slide object so
+        # set_slide_bg() in primitives.py can pick it up.
+        slide_composition = getattr(sdata, "composition", None)
+        if slide_composition:
+            try:
+                slide._megadeck_composition = slide_composition  # noqa: SLF001
+            except Exception:
+                pass
+
+        # Layout dispatch — when slide.layout is set, fill the named
+        # ingested layout's geometry with this slide's content.
+        layout_name = getattr(sdata, "layout", None)
+        if layout_name:
+            from megadeck.design_system.layouts.fill import apply_layout
+            from megadeck.design_system.primitives import add_page_chrome
+            ok = apply_layout(slide, layout_name, sdata, theme)
+            if ok:
+                add_page_chrome(
+                    slide, theme=theme,
+                    page_n=page_n, page_total=total,
+                    section_label=section_label,
+                )
+                if sdata.notes:
+                    _set_speaker_notes(slide, sdata.notes)
+                apply_transition(slide.element, sdata.transition)
+                continue
 
         renderer_fn = _RENDERERS.get(type(sdata))
         if renderer_fn is None:

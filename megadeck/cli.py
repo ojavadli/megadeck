@@ -278,6 +278,80 @@ pool_app = typer.Typer(help="Manage the design pool — pluggable theme JSON fil
 app.add_typer(pool_app, name="pool")
 
 
+# ---------------------------------------------------------------------------
+# layouts subcommand — manage ingested human-designed layouts
+# ---------------------------------------------------------------------------
+
+layouts_app = typer.Typer(
+    help="Ingest, list, and apply real human-designed slide layouts harvested from .pptx files."
+)
+app.add_typer(layouts_app, name="layouts")
+
+
+@layouts_app.command("ingest")
+def layouts_ingest_command(
+    source: str = typer.Argument(
+        ...,
+        help="Path to a .pptx file or a folder containing .pptx files to harvest.",
+    ),
+    name_prefix: Optional[str] = typer.Option(
+        None, "--prefix", "-p",
+        help="Optional name prefix for ingested layouts.",
+    ),
+) -> None:
+    """Ingest .pptx file(s) into the layout library.
+
+    Each slide becomes one Layout JSON with role-classified shape geometry,
+    saved under `megadeck/design_system/layouts/lib/`. Use `slide.layout=<name>`
+    in the DSL or pass `--layout <name>` to render with that layout.
+    """
+    from megadeck.design_system.layouts.ingest import ingest_folder, ingest_pptx
+    from megadeck.design_system.layouts.registry import default_layout_lib_dir
+
+    src_path = Path(source)
+    if not src_path.exists():
+        console.print(f"[red]No such path:[/red] {src_path}")
+        raise typer.Exit(1)
+    target = default_layout_lib_dir()
+    target.mkdir(parents=True, exist_ok=True)
+    if src_path.is_file():
+        layouts = ingest_pptx(src_path, save_to=target, name_prefix=name_prefix)
+    else:
+        layouts = ingest_folder(src_path, save_to=target)
+    console.print(
+        f"[green]✓[/green] Ingested [bold]{len(layouts)}[/bold] layouts from {src_path} "
+        f"→ {target}"
+    )
+
+
+@layouts_app.command("list")
+def layouts_list_command(
+    kind: Optional[str] = typer.Option(
+        None, "--kind", "-k",
+        help="Filter by detected kind hint, e.g. 'numbered_list', 'hero_statement'.",
+    ),
+) -> None:
+    """List all registered layouts."""
+    from megadeck.design_system.layouts.registry import all_layouts
+
+    rows = all_layouts()
+    if kind:
+        rows = [l for l in rows if l.kind_hint == kind]
+    table = Table(title=f"Megadeck Layouts ({len(rows)})")
+    table.add_column("Name", style="cyan")
+    table.add_column("Kind hint")
+    table.add_column("Shapes", justify="right")
+    table.add_column("Source")
+    for lay in sorted(rows, key=lambda x: x.name):
+        table.add_row(lay.name, lay.kind_hint, str(len(lay.shapes)), lay.source)
+    console.print(table)
+    if not rows:
+        console.print(
+            "[yellow]No layouts ingested yet. Try:[/yellow]\n"
+            "    megadeck layouts ingest <path-to-folder-of-pptx>"
+        )
+
+
 @pool_app.command("list")
 def pool_list_command() -> None:
     """List every theme in the registry (built-ins + JSON pool)."""

@@ -31,6 +31,10 @@ from megadeck.design_system.templates.three_card import render_three_card
 from megadeck.design_system.templates.timeline import render_timeline
 from megadeck.design_system.templates.title import render_title
 from megadeck.design_system.templates.two_column import render_two_column
+from megadeck.design_system.templates.icon_grid import render_icon_grid
+from megadeck.design_system.templates.bar_chart import render_bar_chart
+from megadeck.design_system.templates.donut_chart import render_donut_chart
+from megadeck.design_system.templates.photo_card import render_photo_card
 
 # Side-effect import: registers (kind, variant) → render_fn into VARIANTS.
 # Without this import the variant dispatch silently falls back to defaults.

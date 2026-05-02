@@ -110,13 +110,26 @@ def set_slide_bg(slide: Slide, color: RGBColor, theme: Theme | None = None) -> N
                 angle_deg=160.0,
             )
 
-    # Decorations (orbs, mesh, ribbons, geometric, scribble dots…) layer
-    # on every theme — including solid-bg ones. This is the difference
-    # between a theme and a *design*.
+    # Composition layer — adds ambient shape language (grid, hairlines,
+    # editorial rules, photo zones, brutalist slabs) on top of the
+    # background. Per-slide composition overrides theme default; theme
+    # default overrides nothing (defaults to 'typographic' = no shapes).
+    #
+    # NOTE: legacy decorations (orbs/mesh/etc) are now ONLY rendered when
+    # the resolved composition is 'orbs'. Themes that previously relied on
+    # the always-on decorations should set composition='orbs' explicitly.
     if theme is not None:
         try:
-            from megadeck.design_system.decorations import apply_decorations
-            apply_decorations(slide, theme)
+            from megadeck.design_system.compositions import (
+                apply_composition, COMPOSITIONS,
+            )
+            comp_name = (
+                getattr(slide, "_megadeck_composition", None)
+                or theme.composition
+                or "typographic"
+            )
+            if comp_name in COMPOSITIONS:
+                apply_composition(slide, theme, override=comp_name)
         except Exception:
             pass
 

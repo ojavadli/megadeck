@@ -118,6 +118,16 @@ class _SlideBase(BaseModel):
             "When None, the kind's default layout is used."
         ),
     )
+    layout: Optional[str] = Field(
+        None,
+        max_length=120,
+        description="Optional name of an ingested human-designed layout (see megadeck.design_system.layouts).",
+    )
+    composition: Optional[str] = Field(
+        None,
+        max_length=24,
+        description="Optional visual composition: 'typographic' | 'swiss' | 'blueprint' | 'brutalist' | 'editorial' | 'photographic' | 'grid' | 'orbs'.",
+    )
 
 
 class HeroStatementSlide(_SlideBase):
@@ -462,6 +472,58 @@ class SectionHeroSlide(_SlideBase):
     subtitle: Optional[str] = Field(None, max_length=160)
 
 
+# ----- Imagery slide kinds (must come BEFORE the Slide union below) ----------
+
+class IconBullet(BaseModel):
+    """One bullet with an associated Lucide icon name."""
+    icon: str = Field(..., description="Lucide icon name (see megadeck.design_system.icons.LUCIDE_INLINE).")
+    head: str = Field(..., max_length=70)
+    tail: Optional[str] = Field(None, max_length=180)
+
+
+class IconGridSlide(_SlideBase):
+    """Grid of 3-6 features, each with a Lucide icon glyph."""
+    kind: Literal["icon_grid"] = "icon_grid"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=140)
+    items: List[IconBullet] = Field(..., min_length=3, max_length=6)
+
+
+class BarChartSlide(_SlideBase):
+    """Chart slide with a column or bar chart driven by category/value pairs."""
+    kind: Literal["bar_chart"] = "bar_chart"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=160)
+    categories: List[str] = Field(..., min_length=2, max_length=12)
+    values: List[float] = Field(..., min_length=2, max_length=12)
+    series_name: str = Field("Series", max_length=40)
+    horizontal: bool = False
+    note: Optional[str] = Field(None, max_length=200)
+
+
+class DonutChartSlide(_SlideBase):
+    """Chart slide with a donut chart of category/value slices."""
+    kind: Literal["donut_chart"] = "donut_chart"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=160)
+    categories: List[str] = Field(..., min_length=2, max_length=8)
+    values: List[float] = Field(..., min_length=2, max_length=8)
+
+
+class PhotoCardSlide(_SlideBase):
+    """Photo + headline split. Photo can be a local path or a URL."""
+    kind: Literal["photo_card"] = "photo_card"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=140)
+    subtitle: Optional[str] = Field(None, max_length=200)
+    body: Optional[str] = Field(None, max_length=400)
+    photo: Optional[str] = Field(None, description="Local file path to a JPG/PNG, or HTTPS URL. None -> placeholder card.")
+    photo_position: Literal["right", "left", "full"] = "right"
+
+
 # Discriminated union — the renderer dispatches on `kind`.
 Slide = Annotated[
     Union[
@@ -497,6 +559,10 @@ Slide = Annotated[
         ManifestoSlide,
         QuoteDecorativeSlide,
         SectionHeroSlide,
+        IconGridSlide,
+        BarChartSlide,
+        DonutChartSlide,
+        PhotoCardSlide,
     ],
     Field(discriminator="kind"),
 ]

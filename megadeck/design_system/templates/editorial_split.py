@@ -144,11 +144,38 @@ def render_editorial_split(
         color=theme.hairline, width=0.012,
     )
 
-    # Decorative orb composition on the other side
-    _add_decoration_orbs(
-        slide, theme,
-        x=deco_x, y=1.40, w=HALF_W, h=4.5,
-        accent=accent_hex,
+    # Editorial decoration: a typographic plate (large pull-quote glyph
+    # + accent rule + folio mark). NO MORE ORBS — this composition is now
+    # purely typographic, like a magazine layout.
+    from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
+    add_text(
+        slide,
+        left=deco_x, top=1.40, width=HALF_W, height=2.40,
+        text="❝",
+        font=theme.font_display,
+        size_pt=320,
+        color=theme.accent_lt,
+        align=PP_ALIGN.CENTER,
+        anchor=MSO_ANCHOR.MIDDLE,
+        auto_size=False,
+    )
+    # Accent rule under the glyph
+    add_v_line(
+        slide,
+        left=deco_x + HALF_W * 0.30, top=4.10,
+        height=0.05, color=theme.accent, width=HALF_W * 0.40,
+    )
+    # Folio mark — small kicker text
+    add_text(
+        slide,
+        left=deco_x, top=4.40, width=HALF_W, height=0.50,
+        text=data.eyebrow.upper(),
+        font=theme.font_body,
+        size_pt=10,
+        color=theme.muted,
+        align=PP_ALIGN.CENTER,
+        anchor=MSO_ANCHOR.MIDDLE,
+        auto_size=False,
     )
 
     add_page_chrome(

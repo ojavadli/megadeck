@@ -1,0 +1,59 @@
+{
+  "name": "bmu-007",
+  "source": "file:StartXMarch14LongNotesNoVideo_BMU_May6_Dynamic_BACKUP2.pptx:7",
+  "kind_hint": "two_column",
+  "slide_w_in": 13.333333333333334,
+  "slide_h_in": 7.5,
+  "palette": [],
+  "description": "Layout extracted from slide 7 of StartXMarch14LongNotesNoVideo_BMU_May6_Dynamic_BACKUP2.pptx",
+  "shapes": [
+    {
+      "role": "body",
+      "left_in": 1.1,
+      "top_in": 0.95,
+      "width_in": 11.13,
+      "height_in": 0.3,
+      "text": "THE #1 SKILL OF GREAT FOUNDERS",
+      "font_size_pt": 11.0,
+      "font_bold": true,
+      "font_italic": false,
+      "font_name": "SF Pro Display",
+      "color": "94A3B8",
+      "fill": null,
+      "alignment": "left",
+      "z": 1
+    },
+    {
+      "role": "title",
+      "left_in": 1.1,
+      "top_in": 1.9705883639545057,
+      "width_in": 11.13,
+      "height_in": 1.5,
+      "text": "Talk to your customers \u2014 Before, During, and After.",
+      "font_size_pt": 64.0,
+      "font_bold": true,
+      "font_italic": false,
+      "font_name": "SF Pro Display",
+      "color": "090B11",
+      "fill": null,
+      "alignment": "left",
+      "z": 2
+    },
+    {
+      "role": "body",
+      "left_in": 1.1,
+      "top_in": 4.6,
+      "width_in": 11.13,
+      "height_in": 2.5,
+      "text": "Before launch: validate that the problem is real and painful.During build: keep listening \u2014 feature opinions are cheap, but pain is data.After launch: never stop. Customers tell you what to build next.",
+      "font_size_pt": 20.0,
+      "font_bold": false,
+      "font_italic": false,
+      "font_name": "SF Pro Display",
+      "color": "475569",
+      "fill": null,
+      "alignment": "left",
+      "z": 3
+    }
+  ]
+}

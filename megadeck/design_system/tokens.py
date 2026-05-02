@@ -109,6 +109,15 @@ class Theme:
     # e.g. `{"numbered_list": "split", "three_card": "staggered"}`. The
     # renderer applies these when the slide doesn't specify its own variant.
     variant_overrides: Tuple[Tuple[str, str], ...] = field(default_factory=tuple)
+    # Default composition for slides on this theme. One of the names registered
+    # in `megadeck.design_system.compositions.COMPOSITIONS`. None → 'typographic'
+    # (no ambient shapes). Slides can override per-slide via `slide.composition`.
+    composition: Optional[str] = None
+    # When True, the slide rhythm orchestrator will rotate compositions across
+    # the deck so consecutive slides never share visual language. When the
+    # theme already specifies a composition, this is the *base* and rotation
+    # cycles outwards from it.
+    rotate_compositions: bool = True
 
     @property
     def content_width_in(self) -> float:

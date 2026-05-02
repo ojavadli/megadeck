@@ -22,7 +22,7 @@ variety.
 """
 from __future__ import annotations
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional  # noqa: F401
 
 from megadeck.core.schemas import (
     Deck,
