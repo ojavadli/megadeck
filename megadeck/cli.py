@@ -16,8 +16,18 @@ from megadeck.core.critic import audit_deck as audit_deck_core
 from megadeck.core.import_pptx import import_pptx
 from megadeck.core.llm import generate_deck as llm_generate
 from megadeck.core.preview import render_pptx_to_pngs
+from megadeck.core.pptx_audit import audit_pptx, summarize_audit
 from megadeck.core.renderer import render_deck
-from megadeck.design_system.tokens import list_themes
+from megadeck.core.selfheal import render_with_selfheal
+from megadeck.design_system.registry import (
+    default_pool_dir,
+    list_pool_themes,
+    load_theme_json,
+    register_pool_theme,
+    sync_default_pool,
+    theme_to_dict,
+)
+from megadeck.design_system.tokens import get_theme, list_themes
 
 
 app = typer.Typer(
@@ -69,6 +79,13 @@ def generate(
         True, "--audit/--no-audit",
         help="Run the visual critic loop after rendering.",
     ),
+    strict: bool = typer.Option(
+        False, "--strict",
+        help=(
+            "After render, run shape-level audit + self-heal up to 4 iterations; "
+            "exit non-zero if any errors remain."
+        ),
+    ),
 ) -> None:
     """Generate a deck from a natural-language prompt."""
     console.rule("[bold]Megadeck — Generate[/bold]")
@@ -83,9 +100,18 @@ def generate(
             model=model,
         )
     console.print(f"[green]✓[/green] LLM produced {len(deck.slides)} slides.")
-    with console.status("[cyan]Rendering pptx…[/cyan]"):
-        out_path = render_deck(deck, output)
-    console.print(f"[green]✓[/green] Wrote [bold]{out_path}[/bold]")
+    if strict:
+        with console.status("[cyan]Rendering + self-heal loop…[/cyan]"):
+            out_path, summary = render_with_selfheal(deck, output, max_iters=4)
+        errors = summary.get("_errors", 0)
+        if errors:
+            console.print(f"[red]✗ {errors} audit errors remain after self-heal[/red]")
+            raise typer.Exit(1)
+        console.print(f"[green]✓[/green] Wrote [bold]{out_path}[/bold] — strict audit clean")
+    else:
+        with console.status("[cyan]Rendering pptx…[/cyan]"):
+            out_path = render_deck(deck, output)
+        console.print(f"[green]✓[/green] Wrote [bold]{out_path}[/bold]")
     if audit:
         with console.status("[cyan]Running visual critic…[/cyan]"):
             report = audit_deck_core(out_path, deck=deck)
@@ -186,6 +212,10 @@ def import_command(
         "default", "--theme", "-t",
         help="Theme to apply to the imported deck.",
     ),
+    strict: bool = typer.Option(
+        False, "--strict",
+        help="Run audit + self-heal until clean; exit non-zero on remaining errors.",
+    ),
 ) -> None:
     """Heuristically import an existing pptx into the Megadeck DSL and re-render it
     with a chosen theme. Best for re-skinning legacy decks. Complex slides may
@@ -193,8 +223,109 @@ def import_command(
     console.rule("[bold]Megadeck — Import + Re-render[/bold]")
     deck = import_pptx(pptx_path, theme=theme)
     console.print(f"[green]✓[/green] Imported {len(deck.slides)} slides")
-    out = render_deck(deck, output)
-    console.print(f"[green]✓[/green] Re-rendered with theme [bold]{theme}[/bold] → {out}")
+    if strict:
+        out, summary = render_with_selfheal(deck, output, max_iters=4, verbose=True)
+        errors = summary.get("_errors", 0)
+        if errors:
+            console.print(f"[red]✗ {errors} audit errors remain after self-heal[/red]")
+            raise typer.Exit(1)
+        console.print(f"[green]✓[/green] [bold]{out}[/bold] — strict audit clean (errors=0)")
+    else:
+        out = render_deck(deck, output)
+        console.print(f"[green]✓[/green] Re-rendered with theme [bold]{theme}[/bold] → {out}")
+
+
+@app.command(name="pptx-audit")
+def pptx_audit_command(
+    pptx_path: Path = typer.Argument(..., help="Existing .pptx to audit."),
+    json_out: bool = typer.Option(False, "--json", help="Print as JSON."),
+) -> None:
+    """Shape-level audit (overlap / overflow / off-canvas). Fast, deterministic."""
+    audit = audit_pptx(pptx_path)
+    summary = summarize_audit(audit)
+    if json_out:
+        out = {label: [
+            {
+                "issue": i.issue,
+                "severity": i.severity,
+                "detail": i.detail,
+                "shape_idxs": list(i.shape_idxs),
+            }
+            for i in issues
+        ] for label, issues in audit.items()}
+        out["_summary"] = summary
+        print(json.dumps(out, indent=2))
+        return
+    table = Table(title=f"PPTX audit — total={summary.get('_total', 0)} errors={summary.get('_errors', 0)}")
+    table.add_column("Slide")
+    table.add_column("Issue")
+    table.add_column("Severity")
+    table.add_column("Detail")
+    for label, issues in audit.items():
+        for iss in issues:
+            colour = "red" if iss.severity == "error" else "yellow"
+            table.add_row(
+                label,
+                iss.issue,
+                f"[{colour}]{iss.severity}[/{colour}]",
+                iss.detail,
+            )
+    console.print(table)
+
+
+pool_app = typer.Typer(help="Manage the design pool — pluggable theme JSON files.")
+app.add_typer(pool_app, name="pool")
+
+
+@pool_app.command("list")
+def pool_list_command() -> None:
+    """List every theme in the registry (built-ins + JSON pool)."""
+    pool_dir = default_pool_dir()
+    table = Table(title=f"Theme pool — {pool_dir}", show_lines=False)
+    table.add_column("Name", style="bold")
+    table.add_column("Description")
+    table.add_column("Source")
+    pool_names = {p.stem for p in pool_dir.glob("*.json")}
+    for name, description in list_themes():
+        source = "pool/json" if name in pool_names else "built-in"
+        table.add_row(name, description, source)
+    console.print(table)
+
+
+@pool_app.command("install")
+def pool_install_command(
+    json_path: Path = typer.Argument(..., help="Path to a theme .json to install."),
+) -> None:
+    """Install a theme from a local JSON file into the pool directory."""
+    if not json_path.exists():
+        console.print(f"[red]No such file:[/red] {json_path}")
+        raise typer.Exit(1)
+    theme = load_theme_json(json_path)
+    register_pool_theme(theme)
+    target = default_pool_dir() / f"{theme.name}.json"
+    target.write_text(json_path.read_text(encoding="utf-8"), encoding="utf-8")
+    console.print(f"[green]✓[/green] Installed [bold]{theme.name}[/bold] → {target}")
+
+
+@pool_app.command("export")
+def pool_export_command(
+    name: str = typer.Argument(..., help="Theme name to export."),
+    output: Path = typer.Option(Path("./theme.json"), "--output", "-o"),
+) -> None:
+    """Export an existing theme as JSON (good for forking a built-in)."""
+    theme = get_theme(name)
+    output.write_text(json.dumps(theme_to_dict(theme), indent=2), encoding="utf-8")
+    console.print(f"[green]✓[/green] Exported [bold]{name}[/bold] → {output}")
+
+
+@pool_app.command("sync")
+def pool_sync_command() -> None:
+    """Re-load every JSON in the pool directory."""
+    loaded = sync_default_pool()
+    console.print(
+        f"[green]✓[/green] Synced [bold]{len(loaded)}[/bold] themes from "
+        f"{default_pool_dir()}"
+    )
 
 
 # ----- Helpers -----------------------------------------------------------------

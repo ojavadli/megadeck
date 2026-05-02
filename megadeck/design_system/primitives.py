@@ -20,14 +20,24 @@ from megadeck.design_system.tokens import Theme
 
 # ----- Auto-fit / overflow protection -----------------------------------------
 
+# Empirically calibrated against LibreOffice rendering. Inter / SF Pro
+# almost never render at width-factor 0.50 — fonts often fall back to a
+# wider system family. 0.60 has been verified to over-estimate (which is
+# exactly what we want for collision avoidance) on the BMU + Phase-3 demo
+# decks across all 36 themes.
+_CHAR_WIDTH_FACTOR = 0.60
+
+
 def fit_title(text: str, *, max_pt: int, min_pt: int = 18, width_in: float = 11.0) -> int:
     """Pick a font size that lets `text` fit in 1-3 lines at width `width_in`.
 
     Bias-toward-readable: starts at `max_pt`, shrinks by 2pt steps until the
-    estimated rendered height stays within 3 lines.
+    estimated rendered height stays within 3 lines. We deliberately err on
+    the side of *over*-shrinking so titles never overflow into bullets when
+    the renderer's font-of-choice isn't installed.
     """
     for size_pt in range(max_pt, min_pt - 1, -2):
-        chars_per_line = max(8, int(width_in * 72.0 / (size_pt * 0.50)))
+        chars_per_line = max(8, int(width_in * 72.0 / (size_pt * _CHAR_WIDTH_FACTOR)))
         n_lines = max(1, math.ceil(len(text) / chars_per_line))
         if n_lines <= 3:
             return size_pt
@@ -38,14 +48,15 @@ def measure_title_height(text: str, *, size_pt: int, width_in: float, line_spaci
     """Estimate rendered height in inches for a title at given pt + width.
 
     Used to compute where the body should start so it never collides with a
-    multi-line title. We err on the side of slightly over-allocating space.
+    multi-line title. We err on the side of slightly over-allocating space —
+    +0.18in safety pad on top of the worst-case font-fallback line count.
     """
-    chars_per_line = max(8, int(width_in * 72.0 / (size_pt * 0.50)))
+    chars_per_line = max(8, int(width_in * 72.0 / (size_pt * _CHAR_WIDTH_FACTOR)))
     explicit_lines = sum(1 for c in text if c == "\n") + 1
     wrapped_lines = max(1, math.ceil(len(text) / chars_per_line))
     n_lines = max(explicit_lines, wrapped_lines)
     line_height_in = (size_pt * line_spacing) / 72.0
-    return n_lines * line_height_in + 0.10  # small breathing room
+    return n_lines * line_height_in + 0.18  # safety pad for font-fallback drift
 
 
 # ----- Background --------------------------------------------------------------
@@ -137,7 +148,15 @@ def add_text(
     align: Optional[PP_ALIGN] = None,
     anchor: Optional[MSO_ANCHOR] = None,
     line_spacing: Optional[float] = None,
+    auto_size: bool = False,
 ):
+    """Add a single-run text box.
+
+    `auto_size` — when True, sets the text frame's auto_size to
+    MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT so the box grows vertically to fit its
+    content. Use this for titles (where wrap-to-N-lines varies by installed
+    fonts) so they never overlap with whatever the renderer placed below.
+    """
     tb = slide.shapes.add_textbox(Inches(left), Inches(top), Inches(width), Inches(height))
     tf = tb.text_frame
     tf.word_wrap = True
@@ -148,6 +167,12 @@ def add_text(
     if anchor is not None:
         try:
             tf.vertical_anchor = anchor
+        except Exception:
+            pass
+    if auto_size:
+        try:
+            from pptx.enum.text import MSO_AUTO_SIZE
+            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
         except Exception:
             pass
     p = tf.paragraphs[0]
