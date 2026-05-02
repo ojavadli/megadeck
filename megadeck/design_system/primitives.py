@@ -6,6 +6,7 @@ files stay short and readable.
 """
 from __future__ import annotations
 
+import math
 from typing import Iterable, Optional, Sequence, Tuple
 
 from pptx.dml.color import RGBColor
@@ -15,6 +16,36 @@ from pptx.slide import Slide
 from pptx.util import Inches, Pt
 
 from megadeck.design_system.tokens import Theme
+
+
+# ----- Auto-fit / overflow protection -----------------------------------------
+
+def fit_title(text: str, *, max_pt: int, min_pt: int = 18, width_in: float = 11.0) -> int:
+    """Pick a font size that lets `text` fit in 1-3 lines at width `width_in`.
+
+    Bias-toward-readable: starts at `max_pt`, shrinks by 2pt steps until the
+    estimated rendered height stays within 3 lines.
+    """
+    for size_pt in range(max_pt, min_pt - 1, -2):
+        chars_per_line = max(8, int(width_in * 72.0 / (size_pt * 0.50)))
+        n_lines = max(1, math.ceil(len(text) / chars_per_line))
+        if n_lines <= 3:
+            return size_pt
+    return min_pt
+
+
+def measure_title_height(text: str, *, size_pt: int, width_in: float, line_spacing: float = 1.05) -> float:
+    """Estimate rendered height in inches for a title at given pt + width.
+
+    Used to compute where the body should start so it never collides with a
+    multi-line title. We err on the side of slightly over-allocating space.
+    """
+    chars_per_line = max(8, int(width_in * 72.0 / (size_pt * 0.50)))
+    explicit_lines = sum(1 for c in text if c == "\n") + 1
+    wrapped_lines = max(1, math.ceil(len(text) / chars_per_line))
+    n_lines = max(explicit_lines, wrapped_lines)
+    line_height_in = (size_pt * line_spacing) / 72.0
+    return n_lines * line_height_in + 0.10  # small breathing room
 
 
 # ----- Background --------------------------------------------------------------
