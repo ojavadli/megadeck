@@ -32,6 +32,10 @@ from megadeck.design_system.templates.timeline import render_timeline
 from megadeck.design_system.templates.title import render_title
 from megadeck.design_system.templates.two_column import render_two_column
 
+# Side-effect import: registers (kind, variant) → render_fn into VARIANTS.
+# Without this import the variant dispatch silently falls back to defaults.
+from megadeck.design_system.templates import numbered_list_variants  # noqa: F401
+
 __all__ = [
     "render_agenda",
     "render_before_after",

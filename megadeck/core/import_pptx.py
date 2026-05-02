@@ -396,12 +396,21 @@ def _classify_slide(
     )
 
 
-def import_pptx(path: str | Path, theme: str = "default") -> Deck:
+def import_pptx(
+    path: str | Path,
+    theme: str = "default",
+    *,
+    rhythm: bool = True,
+) -> Deck:
     """Read a pptx and return a heuristically-classified Deck.
 
     Round-trip is best-effort: complex slides (charts, images, tables) are
     coerced into the closest matching template. Re-render the result through
     `render_deck` to get a Megadeck-themed pptx.
+
+    `rhythm=True` (default) post-processes the deck to assign layout variants
+    that maximise visual variety (numbered_list slides cycle through
+    cards / timeline / split / default).
     """
     src = Presentation(str(Path(path)))
     slides_out: List[SlideUnion] = []
@@ -440,8 +449,12 @@ def import_pptx(path: str | Path, theme: str = "default") -> Deck:
         else:
             promoted.append(sd)
 
-    return Deck(
+    deck = Deck(
         title=Path(path).stem.replace("_", " ").title(),
         theme=theme,
         slides=promoted,
     )
+    if rhythm:
+        from megadeck.core.rhythm import apply_rhythm
+        deck = apply_rhythm(deck)
+    return deck

@@ -109,6 +109,15 @@ class _SlideBase(BaseModel):
         description="Speaker notes — short, organic sentences for delivery.",
     )
     transition: TransitionKind = TransitionKind.FADE
+    variant: Optional[str] = Field(
+        None,
+        max_length=40,
+        description=(
+            "Optional layout variant for this slide kind. e.g. for "
+            "numbered_list: 'default' | 'split' | 'cards' | 'timeline'. "
+            "When None, the kind's default layout is used."
+        ),
+    )
 
 
 class HeroStatementSlide(_SlideBase):

@@ -199,6 +199,16 @@ def render_deck(deck: Deck, output_path: str | Path) -> Path:
         renderer_fn = _RENDERERS.get(type(sdata))
         if renderer_fn is None:
             raise NotImplementedError(f"Unknown slide kind: {type(sdata).__name__}")
+        # Variant dispatch: a slide may opt into a layout variant of its kind
+        # (e.g. numbered_list 'split' instead of the default outlined-numerals).
+        # Themes can default-lock variants too. See megadeck.design_system.variants.
+        from megadeck.design_system.variants import get_variant_renderer
+        renderer_fn = get_variant_renderer(
+            kind=getattr(sdata, "kind", ""),
+            variant=getattr(sdata, "variant", None),
+            theme=theme,
+            default=renderer_fn,
+        )
         renderer_fn(
             slide, sdata, theme,
             page_n=page_n, page_total=total,

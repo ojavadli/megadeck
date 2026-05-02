@@ -1,0 +1,47 @@
+{
+  "name": "tropical-orbs-light",
+  "description": "Coolors palette: https://coolors.co/palette/264653-2a9d8f-e9c46a-f4a261-e76f51 (orbs, light).",
+  "bg": "#e9c46a",
+  "surface": "#E7C061",
+  "overlay": "#E5BB53",
+  "title": "#0A0A0A",
+  "body": "#374151",
+  "muted": "#6B7280",
+  "light": "#9CA3AF",
+  "inverse": "#FFFFFF",
+  "accent": "#e76f51",
+  "accent_dk": "#264653",
+  "accent_lt": "#2a9d8f",
+  "accent_bg": "#FCF0ED",
+  "success": "#10B981",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "hairline": "#E3B546",
+  "font_display": "Inter",
+  "font_body": "Inter",
+  "bg_style": "solid",
+  "card_style": "shadow",
+  "accent_glow": true,
+  "accent_glow_radius_pt": 22,
+  "accent_glow_alpha_pct": 65,
+  "decorations": [
+    {
+      "kind": "orb",
+      "x": -0.05,
+      "y": -0.1,
+      "size_in": 6.0,
+      "color": "#e76f51",
+      "alpha_pct": 35,
+      "soft_edge_pt": 32
+    },
+    {
+      "kind": "orb",
+      "x": 1.05,
+      "y": 1.1,
+      "size_in": 5.5,
+      "color": "#C8E651",
+      "alpha_pct": 30,
+      "soft_edge_pt": 30
+    }
+  ]
+}

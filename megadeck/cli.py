@@ -374,6 +374,64 @@ def pool_generate_command(
     )
 
 
+@pool_app.command("from-seed")
+def pool_from_seed_command(
+    seed: str = typer.Argument(
+        ...,
+        help="Hex color (e.g. '#3B82F6' or '3B82F6'). Generates 10 themes (5 styles × light/dark).",
+    ),
+    name: str = typer.Option(
+        "material", "--name", "-n", help="Theme name prefix.",
+    ),
+) -> None:
+    """Generate themes from a single seed color via Material You's TonalPalette algorithm.
+
+    Pass any hex code, get back 10 distinct themes spanning 5 visual styles
+    × light/dark modes — the entire family is derived mathematically.
+    """
+    import json as _json
+    from megadeck.design_system.adapters.material_you import generate_material_themes
+    seed_clean = "#" + seed.lstrip("#")
+    themes = generate_material_themes(seed_clean, base_name=name)
+    target = default_pool_dir() / "auto" / "material"
+    target.mkdir(parents=True, exist_ok=True)
+    for t in themes:
+        (target / f"{t['name']}.json").write_text(_json.dumps(t, indent=2), encoding="utf-8")
+    sync_default_pool()
+    console.print(
+        f"[green]✓[/green] Generated [bold]{len(themes)}[/bold] Material themes "
+        f"from seed [bold]{seed_clean}[/bold] → {target}"
+    )
+
+
+@pool_app.command("from-coolors")
+def pool_from_coolors_command(
+    source: str = typer.Argument(
+        ...,
+        help="Coolors palette URL or dash-separated hex string.",
+    ),
+    name: str = typer.Option(
+        "coolors", "--name", "-n", help="Theme name prefix.",
+    ),
+) -> None:
+    """Generate themes from a Coolors.co palette URL.
+
+    Pass a URL like https://coolors.co/palette/0a0e27-3b82f6-f97316 —
+    you get 8 themes (4 styles × light/dark) using those exact colours.
+    """
+    import json as _json
+    from megadeck.design_system.adapters.coolors import generate_coolors_themes
+    themes = generate_coolors_themes(source, base_name=name)
+    target = default_pool_dir() / "auto" / "coolors"
+    target.mkdir(parents=True, exist_ok=True)
+    for t in themes:
+        (target / f"{t['name']}.json").write_text(_json.dumps(t, indent=2), encoding="utf-8")
+    sync_default_pool()
+    console.print(
+        f"[green]✓[/green] Generated [bold]{len(themes)}[/bold] Coolors themes → {target}"
+    )
+
+
 @pool_app.command("install-vscode")
 def pool_install_vscode_command(
     source: str = typer.Argument(

@@ -105,6 +105,10 @@ class Theme:
     # and shape-specific fields. Defined as `field(default_factory=list)` to
     # keep the dataclass frozen & hashable.
     decorations: Tuple[Dict[str, Any], ...] = field(default_factory=tuple)
+    # Variant overrides: theme-level default variant per slide kind.
+    # e.g. `{"numbered_list": "split", "three_card": "staggered"}`. The
+    # renderer applies these when the slide doesn't specify its own variant.
+    variant_overrides: Tuple[Tuple[str, str], ...] = field(default_factory=tuple)
 
     @property
     def content_width_in(self) -> float:
