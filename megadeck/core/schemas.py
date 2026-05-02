@@ -53,6 +53,53 @@ class CardItem(BaseModel):
     description: str = Field(..., max_length=180, description="Card body, ≤ 180 chars.")
 
 
+class AgendaItem(BaseModel):
+    number: str = Field(..., max_length=4, description="Item number, e.g. '01'.")
+    title: str = Field(..., max_length=60)
+    description: str = Field("", max_length=140)
+
+
+class TimelineEvent(BaseModel):
+    label: str = Field(..., max_length=20, description="Date / phase, e.g. 'Q1 2026'.")
+    title: str = Field(..., max_length=50)
+    description: str = Field("", max_length=140)
+
+
+class TableRow(BaseModel):
+    cells: List[str] = Field(..., min_length=2, max_length=6)
+
+
+class KpiTile(BaseModel):
+    label: str = Field(..., max_length=30, description="KPI name, e.g. 'MRR'.")
+    value: str = Field(..., max_length=14, description="Big number, e.g. '$24K'.")
+    delta: str = Field("", max_length=20, description="Change indicator, e.g. '+12% MoM'.")
+    delta_positive: bool = Field(True, description="Color delta green (True) or red (False).")
+
+
+class StepNode(BaseModel):
+    title: str = Field(..., max_length=40)
+    description: str = Field("", max_length=120)
+
+
+class ChartSeries(BaseModel):
+    name: str = Field(..., max_length=30)
+    values: List[float] = Field(..., min_length=1, max_length=24)
+
+
+class TeamMember(BaseModel):
+    name: str = Field(..., max_length=40)
+    role: str = Field(..., max_length=60)
+    bio: str = Field("", max_length=120)
+
+
+class PricingTier(BaseModel):
+    name: str = Field(..., max_length=30)
+    price: str = Field(..., max_length=20, description="e.g. '$49 / mo'.")
+    tagline: str = Field("", max_length=60)
+    features: List[str] = Field(..., min_length=1, max_length=8)
+    is_featured: bool = Field(False, description="Highlight as the recommended tier.")
+
+
 # ----- Slide variants ----------------------------------------------------------
 
 class _SlideBase(BaseModel):
@@ -118,6 +165,97 @@ class SectionDividerSlide(_SlideBase):
     )
 
 
+class AgendaSlide(_SlideBase):
+    """Numbered agenda — 'today we will cover…' style."""
+    kind: Literal["agenda"] = "agenda"
+    title: str = Field("Agenda", max_length=40)
+    items: List[AgendaItem] = Field(..., min_length=2, max_length=8)
+
+
+class TimelineSlide(_SlideBase):
+    """Horizontal milestone timeline."""
+    kind: Literal["timeline"] = "timeline"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    events: List[TimelineEvent] = Field(..., min_length=2, max_length=6)
+
+
+class ComparisonTableSlide(_SlideBase):
+    """Feature-comparison table with header row + data rows."""
+    kind: Literal["comparison_table"] = "comparison_table"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    header: List[str] = Field(..., min_length=2, max_length=6)
+    rows: List[TableRow] = Field(..., min_length=1, max_length=8)
+
+
+class PullQuoteSlide(_SlideBase):
+    """Large pull quote with attribution — for emphasis."""
+    kind: Literal["pull_quote"] = "pull_quote"
+    eyebrow: str = Field(..., max_length=40)
+    quote: str = Field(..., max_length=260)
+    author: str = Field(..., max_length=60)
+    role: str = Field("", max_length=60)
+
+
+class BentoGridSlide(_SlideBase):
+    """4 mixed-size cards in a bento layout — perfect for KPIs / features."""
+    kind: Literal["bento_grid"] = "bento_grid"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    items: List[CardItem] = Field(..., min_length=4, max_length=4)
+
+
+class KpiGridSlide(_SlideBase):
+    """Up to 4 metric tiles with delta indicators."""
+    kind: Literal["kpi_grid"] = "kpi_grid"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=140)
+    tiles: List[KpiTile] = Field(..., min_length=2, max_length=4)
+
+
+class BeforeAfterSlide(_SlideBase):
+    """Two-side before/after split with verdict."""
+    kind: Literal["before_after"] = "before_after"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    before_label: str = Field("Before", max_length=20)
+    before_points: List[str] = Field(..., min_length=2, max_length=5)
+    after_label: str = Field("After", max_length=20)
+    after_points: List[str] = Field(..., min_length=2, max_length=5)
+    verdict: Optional[str] = Field(None, max_length=140)
+
+
+class StepDiagramSlide(_SlideBase):
+    """Sequential 3-5 step flow with arrows."""
+    kind: Literal["step_diagram"] = "step_diagram"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    steps: List[StepNode] = Field(..., min_length=3, max_length=5)
+
+
+class CodeSnippetSlide(_SlideBase):
+    """Code block with title and short caption."""
+    kind: Literal["code_snippet"] = "code_snippet"
+    eyebrow: str = Field(..., max_length=40)
+    title: str = Field(..., max_length=110)
+    language: str = Field("python", max_length=20)
+    code: str = Field(..., max_length=1200, description="The code, verbatim.")
+    caption: Optional[str] = Field(None, max_length=160)
+
+
+class TitleSlide(_SlideBase):
+    """Cover slide / opening — title, presenter, date, venue."""
+    kind: Literal["title"] = "title"
+    eyebrow: str = Field("", max_length=40)
+    title: str = Field(..., max_length=110)
+    subtitle: Optional[str] = Field(None, max_length=140)
+    presenter: Optional[str] = Field(None, max_length=80)
+    date: Optional[str] = Field(None, max_length=40)
+    venue: Optional[str] = Field(None, max_length=80)
+
+
 # Discriminated union — the renderer dispatches on `kind`.
 Slide = Annotated[
     Union[
@@ -126,6 +264,16 @@ Slide = Annotated[
         ThreeCardSlide,
         TwoColumnSlide,
         SectionDividerSlide,
+        AgendaSlide,
+        TimelineSlide,
+        ComparisonTableSlide,
+        PullQuoteSlide,
+        BentoGridSlide,
+        KpiGridSlide,
+        BeforeAfterSlide,
+        StepDiagramSlide,
+        CodeSnippetSlide,
+        TitleSlide,
     ],
     Field(discriminator="kind"),
 ]

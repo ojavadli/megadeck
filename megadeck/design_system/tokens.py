@@ -166,10 +166,127 @@ EDITORIAL_THEME = Theme(
 )
 
 
+CORPORATE_THEME = Theme(
+    name="corporate",
+    description="Navy + white. Conservative, board-room friendly.",
+    bg=_rgb("FFFFFF"),
+    surface=_rgb("F8FAFC"),
+    overlay=_rgb("E2E8F0"),
+    title=_rgb("0B1D3A"),
+    body=_rgb("334155"),
+    muted=_rgb("64748B"),
+    light=_rgb("CBD5E1"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("1E3A8A"),         # blue-900
+    accent_dk=_rgb("172554"),
+    accent_lt=_rgb("DBEAFE"),
+    accent_bg=_rgb("EFF6FF"),
+    success=_rgb("166534"),
+    warning=_rgb("9A3412"),
+    danger=_rgb("991B1B"),
+    hairline=_rgb("E2E8F0"),
+)
+
+
+LINEAR_THEME = Theme(
+    name="linear",
+    description="Inspired by Linear's product UI. Cool slate + electric purple accent.",
+    bg=_rgb("FAFAFA"),
+    surface=_rgb("F5F4F8"),
+    overlay=_rgb("E4E1EC"),
+    title=_rgb("0E0E10"),
+    body=_rgb("3A3A40"),
+    muted=_rgb("80808B"),
+    light=_rgb("BABAC0"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("5E6AD2"),         # Linear-style indigo-violet
+    accent_dk=_rgb("3F4ED6"),
+    accent_lt=_rgb("DDDFFB"),
+    accent_bg=_rgb("EFF0FE"),
+    success=_rgb("3CB371"),
+    warning=_rgb("E6A23C"),
+    danger=_rgb("E55353"),
+    hairline=_rgb("E5E5EA"),
+)
+
+
+PASTEL_THEME = Theme(
+    name="pastel",
+    description="Warm muted pastel — gentle, optimistic, designed for product decks.",
+    bg=_rgb("FFFAF3"),             # cream
+    surface=_rgb("FFF3E2"),
+    overlay=_rgb("F1E2C8"),
+    title=_rgb("2D1F12"),
+    body=_rgb("5C4733"),
+    muted=_rgb("8C7560"),
+    light=_rgb("BFAA90"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("DB7B5A"),         # warm clay accent
+    accent_dk=_rgb("A85031"),
+    accent_lt=_rgb("F8D7C5"),
+    accent_bg=_rgb("FCEEDF"),
+    success=_rgb("65A876"),
+    warning=_rgb("D9A45A"),
+    danger=_rgb("BD5E5A"),
+    hairline=_rgb("EBDDC8"),
+)
+
+
+NEON_THEME = Theme(
+    name="neon",
+    description="High-contrast dark + electric green / pink accents. Loud and modern.",
+    bg=_rgb("050507"),
+    surface=_rgb("0F0F14"),
+    overlay=_rgb("191926"),
+    title=_rgb("FFFFFF"),
+    body=_rgb("CFCFD8"),
+    muted=_rgb("8A8A95"),
+    light=_rgb("4F4F5A"),
+    inverse=_rgb("050507"),
+    accent=_rgb("38F8C2"),         # electric mint-green
+    accent_dk=_rgb("18BD92"),
+    accent_lt=_rgb("4FFEDC"),
+    accent_bg=_rgb("0A1F1A"),
+    success=_rgb("38F8C2"),
+    warning=_rgb("F2D060"),
+    danger=_rgb("FF5D8B"),
+    hairline=_rgb("23232E"),
+)
+
+
+PRINT_THEME = Theme(
+    name="print",
+    description="Magazine-print aesthetic. Serif headlines, deep ink, generous margins.",
+    bg=_rgb("F8F4EC"),             # warm paper
+    surface=_rgb("EFE9DB"),
+    overlay=_rgb("DDD3BE"),
+    title=_rgb("0E0E0E"),
+    body=_rgb("3F3A33"),
+    muted=_rgb("76715F"),
+    light=_rgb("A89F8A"),
+    inverse=_rgb("FFFFFF"),
+    accent=_rgb("8B0000"),         # ink crimson
+    accent_dk=_rgb("4F0000"),
+    accent_lt=_rgb("F1C2C2"),
+    accent_bg=_rgb("F6E4E4"),
+    success=_rgb("3D5C2E"),
+    warning=_rgb("8A5A23"),
+    danger=_rgb("8B0000"),
+    hairline=_rgb("D4CDB8"),
+    font_display="New York",
+    font_body="Iowan Old Style",
+)
+
+
 _THEMES: Dict[str, Theme] = {
     "default": DEFAULT_THEME,
     "dark": DARK_THEME,
     "editorial": EDITORIAL_THEME,
+    "corporate": CORPORATE_THEME,
+    "linear": LINEAR_THEME,
+    "pastel": PASTEL_THEME,
+    "neon": NEON_THEME,
+    "print": PRINT_THEME,
 }
 
 

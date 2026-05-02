@@ -10,21 +10,60 @@ from pptx.util import Emu, Inches
 
 from megadeck.animations.transitions import apply_transition
 from megadeck.core.schemas import (
+    AgendaSlide,
+    BeforeAfterSlide,
+    BentoGridSlide,
+    CodeSnippetSlide,
+    ComparisonTableSlide,
     Deck,
     HeroStatementSlide,
+    KpiGridSlide,
     NumberedListSlide,
+    PullQuoteSlide,
     SectionDividerSlide,
+    StepDiagramSlide,
     ThreeCardSlide,
+    TimelineSlide,
+    TitleSlide,
     TwoColumnSlide,
 )
 from megadeck.design_system.templates import (
+    render_agenda,
+    render_before_after,
+    render_bento_grid,
+    render_code_snippet,
+    render_comparison_table,
     render_hero_statement,
+    render_kpi_grid,
     render_numbered_list,
+    render_pull_quote,
     render_section_divider,
+    render_step_diagram,
     render_three_card,
+    render_timeline,
+    render_title,
     render_two_column,
 )
 from megadeck.design_system.tokens import Theme, get_theme
+
+
+_RENDERERS = {
+    HeroStatementSlide: render_hero_statement,
+    NumberedListSlide: render_numbered_list,
+    ThreeCardSlide: render_three_card,
+    TwoColumnSlide: render_two_column,
+    SectionDividerSlide: render_section_divider,
+    AgendaSlide: render_agenda,
+    TimelineSlide: render_timeline,
+    ComparisonTableSlide: render_comparison_table,
+    PullQuoteSlide: render_pull_quote,
+    BentoGridSlide: render_bento_grid,
+    KpiGridSlide: render_kpi_grid,
+    BeforeAfterSlide: render_before_after,
+    StepDiagramSlide: render_step_diagram,
+    CodeSnippetSlide: render_code_snippet,
+    TitleSlide: render_title,
+}
 
 
 P_NS = "http://schemas.openxmlformats.org/presentationml/2006/main"
@@ -106,38 +145,14 @@ def render_deck(deck: Deck, output_path: str | Path) -> Path:
         page_n = idx + 1
         section_label = _section_label_for(deck, idx)
 
-        if isinstance(sdata, HeroStatementSlide):
-            render_hero_statement(
-                slide, sdata, theme,
-                page_n=page_n, page_total=total,
-                section_label=section_label,
-            )
-        elif isinstance(sdata, NumberedListSlide):
-            render_numbered_list(
-                slide, sdata, theme,
-                page_n=page_n, page_total=total,
-                section_label=section_label,
-            )
-        elif isinstance(sdata, ThreeCardSlide):
-            render_three_card(
-                slide, sdata, theme,
-                page_n=page_n, page_total=total,
-                section_label=section_label,
-            )
-        elif isinstance(sdata, TwoColumnSlide):
-            render_two_column(
-                slide, sdata, theme,
-                page_n=page_n, page_total=total,
-                section_label=section_label,
-            )
-        elif isinstance(sdata, SectionDividerSlide):
-            render_section_divider(
-                slide, sdata, theme,
-                page_n=page_n, page_total=total,
-                section_label=section_label,
-            )
-        else:
+        renderer_fn = _RENDERERS.get(type(sdata))
+        if renderer_fn is None:
             raise NotImplementedError(f"Unknown slide kind: {type(sdata).__name__}")
+        renderer_fn(
+            slide, sdata, theme,
+            page_n=page_n, page_total=total,
+            section_label=section_label,
+        )
 
         # Speaker notes
         if sdata.notes:

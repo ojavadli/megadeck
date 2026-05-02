@@ -32,11 +32,21 @@ sound like a human talking to a friend.
 Available themes: {themes}
 
 Available slide kinds:
+- title                — Cover slide with title + presenter + date + venue
 - hero_statement       — One bold line ≤ 80 chars + up to 4 supporting lines
 - numbered_list        — 2-6 items with bold heads + tail descriptions
 - three_card           — Exactly 3 cards (badge / label / description)
 - two_column           — Side-by-side comparison
 - section_divider      — Part break with eyebrow + giant title
+- agenda               — Numbered agenda with 2-8 items
+- timeline             — Horizontal timeline of 2-6 events
+- comparison_table     — Header + 1-8 data rows
+- pull_quote           — Large quote with author and role
+- bento_grid           — Exactly 4 cards in a 2x2 layout
+- kpi_grid             — 2-4 metric tiles with delta indicators
+- before_after         — Before/after split with optional verdict
+- step_diagram         — 3-5 sequential steps with arrows
+- code_snippet         — Code block with language + caption
 
 Hard constraints:
 - Every bullet head ≤ 80 chars. Every bullet tail ≤ 240 chars.

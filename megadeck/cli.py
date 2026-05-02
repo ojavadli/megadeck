@@ -13,6 +13,7 @@ from rich.panel import Panel
 
 from megadeck import __version__
 from megadeck.core.critic import audit_deck as audit_deck_core
+from megadeck.core.import_pptx import import_pptx
 from megadeck.core.llm import generate_deck as llm_generate
 from megadeck.core.preview import render_pptx_to_pngs
 from megadeck.core.renderer import render_deck
@@ -125,11 +126,21 @@ def themes() -> None:
 def templates() -> None:
     """List the available slide templates."""
     rows = [
-        ("hero_statement", "One bold statement + supporting lines"),
-        ("numbered_list",  "Up to 6 items with big outlined numbers"),
-        ("three_card",     "Three side-by-side cards"),
-        ("two_column",     "Side-by-side comparison columns"),
-        ("section_divider","Section break with eyebrow + giant title"),
+        ("title",           "Cover slide — title, presenter, date, venue"),
+        ("hero_statement",  "One bold statement + supporting lines"),
+        ("numbered_list",   "Up to 6 items with big outlined numbers"),
+        ("three_card",      "Three side-by-side cards"),
+        ("two_column",      "Side-by-side comparison columns"),
+        ("section_divider", "Section break with eyebrow + giant title"),
+        ("agenda",          "Numbered agenda with descriptions"),
+        ("timeline",        "Horizontal timeline of milestones"),
+        ("comparison_table","Header + data rows comparison table"),
+        ("pull_quote",      "Large quote with author and role"),
+        ("bento_grid",      "Four cards in a 2x2 bento layout"),
+        ("kpi_grid",        "2-4 metric tiles with delta"),
+        ("before_after",    "Before / After split with verdict"),
+        ("step_diagram",    "3-5 sequential steps with arrows"),
+        ("code_snippet",    "Code block with language tag"),
     ]
     table = Table(title="Slide templates", show_lines=False)
     table.add_column("Kind", style="bold")
@@ -152,6 +163,27 @@ def preview(
     for p in pngs:
         console.print(f"  [green]•[/green] {p}")
     console.print(f"\n[bold]{len(pngs)}[/bold] preview images written.")
+
+
+@app.command(name="import")
+def import_command(
+    pptx_path: Path = typer.Argument(..., help="Existing pptx to re-skin."),
+    output: Path = typer.Option(
+        Path("reskinned.pptx"), "--output", "-o", help="Output .pptx path.",
+    ),
+    theme: str = typer.Option(
+        "default", "--theme", "-t",
+        help="Theme to apply to the imported deck.",
+    ),
+) -> None:
+    """Heuristically import an existing pptx into the Megadeck DSL and re-render it
+    with a chosen theme. Best for re-skinning legacy decks. Complex slides may
+    fall back to numbered_list template."""
+    console.rule("[bold]Megadeck — Import + Re-render[/bold]")
+    deck = import_pptx(pptx_path, theme=theme)
+    console.print(f"[green]✓[/green] Imported {len(deck.slides)} slides")
+    out = render_deck(deck, output)
+    console.print(f"[green]✓[/green] Re-rendered with theme [bold]{theme}[/bold] → {out}")
 
 
 # ----- Helpers -----------------------------------------------------------------
