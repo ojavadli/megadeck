@@ -61,6 +61,20 @@ _COMPOSITION_ROTATION: List[str] = [
 def apply_rhythm(deck: Deck, *, period: int = 6) -> Deck:
     """Return a copy of `deck` with all rhythms applied. Content is never
     altered — only `slide.variant` and `slide.composition` are set."""
+    # Respect the theme's `rotate_compositions=False` setting: when the theme
+    # opts out, every slide inherits the theme's `composition` rather than
+    # being assigned a different composition per slide. This is essential for
+    # cohesive themes like 'apple-glass' that want the same futurist HUD on
+    # every slide.
+    from megadeck.design_system.tokens import get_theme
+    theme_for_rhythm = get_theme(deck.theme) if deck.theme else None
+    rotate = True
+    forced_comp: Optional[str] = None
+    if theme_for_rhythm is not None:
+        rotate = bool(getattr(theme_for_rhythm, "rotate_compositions", True))
+        if not rotate:
+            forced_comp = getattr(theme_for_rhythm, "composition", None)
+
     new_slides: List[SlideUnion] = []
     nl_i = 0
     tc_i = 0
@@ -107,16 +121,25 @@ def apply_rhythm(deck: Deck, *, period: int = 6) -> Deck:
 
         # Composition rhythm — never repeat back-to-back.
         if getattr(replacement, "composition", None) is None:
-            comp = _COMPOSITION_ROTATION[comp_i % len(_COMPOSITION_ROTATION)]
-            comp_i += 1
-            if comp == last_comp:
+            if not rotate and forced_comp:
+                # Theme has rotate_compositions=False — every slide gets the
+                # theme's composition for a cohesive look.
+                try:
+                    replacement = replacement.model_copy(update={"composition": forced_comp})
+                except Exception:
+                    pass
+                last_comp = forced_comp
+            else:
                 comp = _COMPOSITION_ROTATION[comp_i % len(_COMPOSITION_ROTATION)]
                 comp_i += 1
-            try:
-                replacement = replacement.model_copy(update={"composition": comp})
-            except Exception:
-                pass
-            last_comp = comp
+                if comp == last_comp:
+                    comp = _COMPOSITION_ROTATION[comp_i % len(_COMPOSITION_ROTATION)]
+                    comp_i += 1
+                try:
+                    replacement = replacement.model_copy(update={"composition": comp})
+                except Exception:
+                    pass
+                last_comp = comp
         else:
             last_comp = getattr(replacement, "composition", None)
 

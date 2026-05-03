@@ -375,6 +375,101 @@ def _risograph(slide: Slide, theme: Theme) -> None:
 
 
 # ---------------------------------------------------------------------------
+# futurist — Apple-style minimal HUD: thin grid + corner brackets + status pill
+# ---------------------------------------------------------------------------
+
+@register_composition("futurist")
+def _futurist(slide: Slide, theme: Theme) -> None:
+    """Futuristic Apple-HUD aesthetic: ambient grid, corner brackets, glass pill."""
+    from megadeck.design_system.effects import apply_solid_fill, apply_radial_gradient
+    sw = theme.slide_width_in
+    sh = theme.slide_height_in
+
+    # Ambient large radial glow top-right (subtle accent)
+    glow = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL,
+        Inches(sw - 5.50), Inches(-2.80),
+        Inches(7.50), Inches(7.50),
+    )
+    glow.line.fill.background()
+    try:
+        apply_radial_gradient(
+            glow,
+            inner_color=theme.accent, outer_color=theme.accent,
+            inner_alpha=14, outer_alpha=0,
+        )
+    except Exception:
+        pass
+
+    # Ambient large radial glow bottom-left (deeper accent)
+    glow2 = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL,
+        Inches(-3.00), Inches(sh - 4.00),
+        Inches(7.00), Inches(7.00),
+    )
+    glow2.line.fill.background()
+    try:
+        apply_radial_gradient(
+            glow2,
+            inner_color=theme.accent_dk, outer_color=theme.accent_dk,
+            inner_alpha=10, outer_alpha=0,
+        )
+    except Exception:
+        pass
+
+    # Thin grid lines — only every 2 inches (very subtle)
+    for x in (sw / 4, sw / 2, 3 * sw / 4):
+        _add_rect(slide, left=x, top=0.50, width=0.008, height=sh - 1.00,
+                  color=theme.hairline)
+    # Horizontal baseline rules top + bottom (thin)
+    _add_rect(slide, left=0.50, top=0.50, width=sw - 1.00, height=0.012,
+              color=theme.hairline)
+    _add_rect(slide, left=0.50, top=sh - 0.55, width=sw - 1.00, height=0.012,
+              color=theme.hairline)
+
+    # Corner L-brackets (HUD aesthetic) — 4 corners
+    L = 0.32
+    bracket = theme.accent
+    for cx, cy in (
+        (0.30, 0.30), (sw - 0.62, 0.30),
+        (0.30, sh - 0.42), (sw - 0.62, sh - 0.42),
+    ):
+        _add_rect(slide, left=cx, top=cy, width=L, height=0.018, color=bracket)
+        _add_rect(slide, left=cx, top=cy, width=0.018, height=L, color=bracket)
+
+    # Status pill top-right (glass effect simulated with thin border + low-alpha fill)
+    pill_w, pill_h = 1.40, 0.32
+    pill_x = sw - pill_w - 0.40
+    pill_y = 0.30
+    pill = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE,
+        Inches(pill_x), Inches(pill_y),
+        Inches(pill_w), Inches(pill_h),
+    )
+    pill.adjustments[0] = 0.50
+    apply_solid_fill(pill, theme.surface, alpha=8)
+    try:
+        pill.line.color.rgb = theme.hairline
+        pill.line.width = Pt(0.5)
+    except Exception:
+        pass
+    # Status dot
+    dot = slide.shapes.add_shape(
+        MSO_SHAPE.OVAL,
+        Inches(pill_x + 0.12), Inches(pill_y + (pill_h - 0.10) / 2),
+        Inches(0.10), Inches(0.10),
+    )
+    apply_solid_fill(dot, theme.accent)
+    dot.line.fill.background()
+    _add_text(
+        slide, "MEGADECK / 2026",
+        left=pill_x + 0.30, top=pill_y + 0.05,
+        w=pill_w - 0.30, h=0.22,
+        color=theme.body, font="SF Pro Text", size_pt=8,
+    )
+
+
+# ---------------------------------------------------------------------------
 # orbs — legacy default (still available, opt-in only)
 # ---------------------------------------------------------------------------
 

@@ -208,33 +208,6 @@ def render_deck(deck: Deck, output_path: str | Path) -> Path:
         page_n = idx + 1
         section_label = _section_label_for(deck, idx)
 
-        # Stamp per-slide composition (if any) onto the slide object so
-        # set_slide_bg() in primitives.py can pick it up.
-        slide_composition = getattr(sdata, "composition", None)
-        if slide_composition:
-            try:
-                slide._megadeck_composition = slide_composition  # noqa: SLF001
-            except Exception:
-                pass
-
-        # Layout dispatch — when slide.layout is set, fill the named
-        # ingested layout's geometry with this slide's content.
-        layout_name = getattr(sdata, "layout", None)
-        if layout_name:
-            from megadeck.design_system.layouts.fill import apply_layout
-            from megadeck.design_system.primitives import add_page_chrome
-            ok = apply_layout(slide, layout_name, sdata, theme)
-            if ok:
-                add_page_chrome(
-                    slide, theme=theme,
-                    page_n=page_n, page_total=total,
-                    section_label=section_label,
-                )
-                if sdata.notes:
-                    _set_speaker_notes(slide, sdata.notes)
-                apply_transition(slide.element, sdata.transition)
-                continue
-
         # Stamp per-slide composition (if any) onto the slide so set_slide_bg()
         # in primitives.py can render the right ambient design layer.
         slide_composition = getattr(sdata, "composition", None)
@@ -294,6 +267,17 @@ def render_deck(deck: Deck, output_path: str | Path) -> Path:
             page_n=page_n, page_total=total,
             section_label=section_label,
         )
+
+        # Glass illustration — for futurist composition only, inject a
+        # content-aware Lucide icon inside a frosted-glass orb in the
+        # bottom-right region. The icon is picked by keyword-matching on the
+        # slide's title/eyebrow/body, so each slide gets a relevant glyph.
+        if slide_composition == "futurist":
+            try:
+                from megadeck.design_system.illustrate import add_glass_illustration
+                add_glass_illustration(slide, sdata, slide_theme)
+            except Exception:
+                pass
 
         # Speaker notes
         if sdata.notes:

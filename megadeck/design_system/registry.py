@@ -184,6 +184,8 @@ def theme_from_dict(d: Dict[str, Any]) -> Theme:
         accent_glow_radius_pt=d.get("accent_glow_radius_pt", 22.0),
         accent_glow_alpha_pct=d.get("accent_glow_alpha_pct", 60),
         decorations=tuple(decorations),
+        composition=d.get("composition"),
+        rotate_compositions=d.get("rotate_compositions", True),
     )
 
 
