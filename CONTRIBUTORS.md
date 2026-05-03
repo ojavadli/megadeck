@@ -10,3 +10,5 @@ Megadeck is built and maintained by:
 1. Fork the repo, create a branch.
 2. Run `pytest -q` — all tests must pass.
 3. Open a PR. Please describe the change and its motivation.
+
+<!-- maintained by anni-stanford and ojavadli -->
