@@ -37,6 +37,12 @@ def _embed_photo(
     width: float, height: float,
     theme: Theme,
 ) -> None:
+    # Resolve `unsplash:keywords` specs into actual local files before embedding.
+    try:
+        from megadeck.design_system.unsplash import resolve_photo
+        photo = resolve_photo(photo)
+    except Exception:
+        pass
     if photo is None:
         # Placeholder
         add_round_rect(

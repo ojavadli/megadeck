@@ -41,6 +41,9 @@ from megadeck.design_system.templates.two_column import render_two_column
 from megadeck.design_system.templates import numbered_list_variants  # noqa: F401
 from megadeck.design_system.templates import hero_statement_variants  # noqa: F401
 from megadeck.design_system.templates import three_card_variants  # noqa: F401
+from megadeck.design_system.templates import two_column_variants  # noqa: F401
+from megadeck.design_system.templates import kpi_grid_variants  # noqa: F401
+from megadeck.design_system.templates import bento_grid_variants  # noqa: F401
 
 __all__ = [
     "render_agenda",
