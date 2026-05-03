@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "megadeck"
 version = "0.1.0"
-description = "AI-driven PowerPoint generation with built-in MCP server for Claude Code and Cursor."
+description = "AI-driven PowerPoint generation with built-in MCP server for Claude Code and any MCP-compatible client."
 authors = [{ name = "Orkhan Javadli", email = "ojavadli@mit.edu" }]
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 keywords = [
     "powerpoint", "pptx", "presentation", "slides", "llm", "mcp",
-    "claude-code", "cursor", "ai", "design", "generation",
+    "claude-code", "mcp", "ai", "design", "generation",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",

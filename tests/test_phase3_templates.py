@@ -49,7 +49,7 @@ def _build_phase3_deck() -> Deck:
                     FeatureItem(icon_text="◆", title="DSL", description="Constrained schema."),
                     FeatureItem(icon_text="✚", title="Themes", description="13 of them."),
                     FeatureItem(icon_text="↑", title="Critic", description="Visual audit."),
-                    FeatureItem(icon_text="◉", title="MCP", description="Claude Code + Cursor."),
+                    FeatureItem(icon_text="◉", title="MCP", description="Claude Code + any MCP client."),
                     FeatureItem(icon_text="✦", title="Animations", description="Fade + transitions."),
                     FeatureItem(icon_text="↺", title="Import", description="Round-trip pptx."),
                 ],
@@ -118,7 +118,7 @@ def _build_phase3_deck() -> Deck:
                 title="Megadeck SWOT",
                 strengths=["Open source", "MCP native", "Theme-first"],
                 weaknesses=["No web UI yet", "pptx-only"],
-                opportunities=["AI-native era", "Cursor + Claude Code adoption"],
+                opportunities=["AI-native era", "MCP ecosystem adoption"],
                 threats=["Closed-source SaaS slide tools"],
             ),
             FaqListSlide(

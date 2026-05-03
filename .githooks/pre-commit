@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Block any commit that adds the word "Cursor" (the IDE) to user-facing files.
+# Cursor is just a tool, not a contributor. This guard exists so AI assistants
+# editing the repo can't sneak Cursor branding back in.
+#
+# Allow-list: 'editorCursor.foreground' (VSCode theme.json field name) and
+# variables literally named 'cursor' (e.g. text-cursor positions in renderers)
+# do not trigger this hook.
+
+set -e
+
+# Files staged for commit
+STAGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(md|py|toml|json|yml|yaml|txt|html)$' || true)
+[ -z "$STAGED" ] && exit 0
+
+PATTERN='(\bCursor\b|\bcursor\.com\b|\bcursor\.sh\b|~/\.cursor/|cursor IDE|cursor ide)'
+
+VIOLATIONS=$(echo "$STAGED" | xargs -I {} sh -c '
+    f="$1"
+    # Skip allow-listed contexts:
+    grep -nE "'"$PATTERN"'" "$f" 2>/dev/null \
+        | grep -vE "editorCursor|cursor =|cursor \+|cursor -|cursor:|left=.*cursor" \
+        | sed "s|^|$f:|"
+' _ {} 2>/dev/null || true)
+
+if [ -n "$VIOLATIONS" ]; then
+    echo "✗ Blocked commit: 'Cursor' (the IDE) was added back to user-facing files." >&2
+    echo "$VIOLATIONS" >&2
+    echo "" >&2
+    echo "Cursor is a tool, not a contributor. Please remove these mentions and re-stage." >&2
+    exit 1
+fi
+
+exit 0

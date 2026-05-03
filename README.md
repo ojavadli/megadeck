@@ -1,8 +1,8 @@
 # Megadeck
 
-> AI-driven PowerPoint generation, audited slide-by-slide, ready for Claude Code and Cursor.
+> AI-driven PowerPoint generation, audited slide-by-slide, ready for Claude Code and any MCP-compatible client.
 
-Megadeck turns a natural-language prompt into a styled `.pptx` file. It exposes the same core both as a **command-line tool** and as a **Model Context Protocol (MCP) server**, so Claude Code, Cursor, Claude Desktop, and any MCP-aware client can call it directly.
+Megadeck turns a natural-language prompt into a styled `.pptx` file. It exposes the same core both as a **command-line tool** and as a **Model Context Protocol (MCP) server**, so Claude Code, Claude Desktop, and any MCP-aware client can call it directly.
 
 It is opinionated about three things:
 
@@ -48,9 +48,9 @@ Then in any Claude Code session:
 
 Claude calls Megadeck's MCP tools, runs the critic loop, and saves the `.pptx`.
 
-## Use it inside Cursor
+## Use it inside any MCP-compatible client
 
-Add to `~/.cursor/mcp.json`:
+Megadeck speaks the standard Model Context Protocol over stdio, so any MCP-aware client (Claude Desktop, Continue, Zed, etc.) can launch it. Drop the following into the client's MCP config:
 
 ```json
 {
@@ -64,7 +64,7 @@ Add to `~/.cursor/mcp.json`:
 }
 ```
 
-Restart Cursor. The Composer agent now has access to Megadeck.
+Restart the client; its agent now has access to Megadeck.
 
 ---
 
@@ -169,6 +169,13 @@ See [`ROADMAP.md`](./ROADMAP.md). Phase 1 ships the foundation, the MCP/CLI surf
 - [`typer`](https://github.com/tiangolo/typer) + [`rich`](https://github.com/Textualize/rich) — CLI surface
 - LibreOffice (headless) + [`pdf2image`](https://github.com/Belval/pdf2image) — slide preview
 - Architecture inspired by AI-assisted code-generation tools and constrained-output prompting techniques.
+
+## Contributors
+
+- [Orkhan Javadli](https://github.com/ojavadli)
+- [Anni Zimina](https://github.com/anni-stanford)
+
+See [`CONTRIBUTORS.md`](./CONTRIBUTORS.md).
 
 ## License
 

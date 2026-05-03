@@ -1,12 +1,12 @@
-"""MCP server — exposes Megadeck's tools to Claude Code, Cursor, and any
-MCP-aware client.
+"""MCP server — exposes Megadeck's tools to Claude Code, Claude Desktop,
+and any MCP-aware client.
 
 Run with: `megadeck-mcp` (stdio transport).
 
 Add to Claude Code:
     claude mcp add megadeck --command "uvx megadeck-mcp"
 
-Add to Cursor (~/.cursor/mcp.json):
+Generic stdio MCP config block:
     {
       "mcpServers": {
         "megadeck": { "command": "uvx", "args": ["megadeck-mcp"] }
@@ -243,7 +243,7 @@ def pool_sync_tool() -> dict:
 
 
 def main() -> None:
-    """Stdio entry point used by Claude Code / Cursor."""
+    """Stdio entry point used by Claude Code and other MCP-aware clients."""
     mcp.run()
 
 
